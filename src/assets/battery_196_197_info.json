@@ -1,0 +1,3222 @@
+[
+  {
+    "DeviceType": "313030313937",
+    "DeviceName": "Q200 neo",
+    "channel": 4,
+    "menu": 4,
+    "_version": 1.29,
+    "passwordEnable": 1,
+    "setting": {
+      "time": {
+        "id": 0,
+        "max": 720,
+        "min": 1,
+        "step": 1,
+        "enable": 1,
+        "default": 240,
+        "visible": 1
+      },
+      "capacity": {
+        "id": 0,
+        "max": 50000,
+        "min": 100,
+        "step": 100,
+        "enable": 1,
+        "default": 12000,
+        "visible": 1
+      },
+      "temperature": {
+        "id": 0,
+        "max": 65,
+        "min": 40,
+        "step": 1,
+        "enable": 1,
+        "default": 50,
+        "visible": 0
+      },
+      "recycle": {
+        "id": 0,
+        "max": 120,
+        "min": 10,
+        "step": 1,
+        "enable": 1,
+        "default": 10,
+        "visible": 1
+      },
+      "voltage": {
+        "id": 0,
+        "max": 24,
+        "min": 10,
+        "step": 0.1,
+        "enable": 1,
+        "default": 10,
+        "visible": 1
+      },
+      "power": {
+        "id": 0,
+        "max": 400,
+        "min": 100,
+        "step": 10,
+        "enable": 1,
+        "default": 400,
+        "visible": 0
+      },
+      "balanced": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      },
+      "keyboardSound": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 1
+      },
+      "systemSound": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 1
+      },
+      "version": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 64,
+        "enable": 1,
+        "default": 0,
+        "visible": 1
+      },
+      "dcenable": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      },
+      "dcpower": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      },
+      "dcvoltage": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      },
+      "dccurrent": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      }
+    },
+    "batterys": [
+      {
+        "name": "lipo",
+        "type": "Li",
+        "isShowState": false,
+        "position": 0,
+        "cells": [1, 2, 3, 4, 5, 6],
+        "model": [
+          {
+            "name": "balance",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 3300,
+            "voltageCharge": 4200,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.25,
+                "default": 4.2,
+                "min": 4.15,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "charge",
+            "position": 1,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 3300,
+            "voltageCharge": 4200,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.25,
+                "default": 4.2,
+                "min": 4.15,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3300,
+            "voltageCharge": 4200,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.4,
+                "default": 3.3,
+                "min": 3.0,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "storage",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3850,
+            "voltageCharge": 3850,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.9,
+                "default": 3.85,
+                "min": 3.75,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "liLon",
+        "type": "Li",
+        "isShowState": false,
+        "position": 1,
+        "cells": [1, 2, 3, 4, 5, 6],
+        "model": [
+          {
+            "name": "balance",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 3050,
+            "voltageCharge": 4100,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.25,
+                "default": 4.1,
+                "min": 4.05,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "charge",
+            "position": 1,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 3050,
+            "voltageCharge": 4100,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.25,
+                "default": 4.1,
+                "min": 4.05,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3200,
+            "voltageCharge": 3600,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.3,
+                "default": 3.2,
+                "min": 2.9,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "storage",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3800,
+            "voltageCharge": 3800,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.85,
+                "default": 3.8,
+                "min": 3.7,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "life",
+        "type": "Li",
+        "isShowState": false,
+        "position": 2,
+        "cells": [1, 2, 3, 4, 5, 6],
+        "model": [
+          {
+            "name": "balance",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 2900,
+            "voltageCharge": 3650,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 3.7,
+                "default": 3.65,
+                "min": 3.58,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "charge",
+            "position": 1,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 2900,
+            "voltageCharge": 3650,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 3.7,
+                "default": 3.65,
+                "min": 3.58,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 2900,
+            "voltageCharge": 3600,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.0,
+                "default": 2.9,
+                "min": 2.6,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "storage",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3300,
+            "voltageCharge": 3300,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.4,
+                "default": 3.3,
+                "min": 3.25,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "lihv",
+        "type": "Li",
+        "isShowState": false,
+        "position": 3,
+        "cells": [1, 2, 3, 4, 5, 6],
+        "model": [
+          {
+            "name": "balance",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 3400,
+            "voltageCharge": 4350,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.5,
+                "default": 4.35,
+                "min": 4.25,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "charge",
+            "position": 1,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 3250,
+            "voltageCharge": 4350,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.5,
+                "default": 4.35,
+                "min": 4.25,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3400,
+            "voltageCharge": 3600,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.5,
+                "default": 3.4,
+                "min": 3.1,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "storage",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 3900,
+            "voltageDischarge": 3900,
+            "voltageCharge": 0,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 10,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.95,
+                "default": 3.9,
+                "min": 3.85,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "nimh",
+        "type": "Ni",
+        "isShowState": true,
+        "position": 4,
+        "cells": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "model": [
+          {
+            "name": "charge",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 600,
+            "voltageCharge": 4,
+            "trickleCurrent": 50,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 300,
+                "default": 50,
+                "min": 50,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 6,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 900,
+            "voltageCharge": 3600,
+            "trickleCurrent": 50,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 1,
+                "default": 0.9,
+                "min": 0.6,
+                "step": 0.1,
+                "unit": "V"
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 300,
+                "default": 50,
+                "min": 50,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              }
+            ]
+          },
+          {
+            "name": "re_peak",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "voltageDischarge": 600,
+            "voltageCharge": 0,
+            "trickleCurrent": 50,
+            "repeakNumber": 1,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 3,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 300,
+                "default": 60,
+                "min": 50,
+                "step": 1,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              },
+              {
+                "id": 6,
+                "name": "repeak_number",
+                "max": 1,
+                "default": 1,
+                "min": 1,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": ""
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 6,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              }
+            ]
+          },
+          {
+            "name": "cycle",
+            "position": 4,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 600,
+            "voltageCharge": 4350,
+            "trickleCurrent": 50,
+            "repeakNumber": 0,
+            "cycleNumber": 2,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 10,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 2,
+                "min": 1,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": ""
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 300,
+                "default": 50,
+                "min": 50,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 4,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "nicd",
+        "type": "Ni",
+        "isShowState": true,
+        "position": 5,
+        "cells": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "model": [
+          {
+            "name": "charge",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 600,
+            "voltageCharge": 4,
+            "trickleCurrent": 50,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 300,
+                "default": 50,
+                "min": 50,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 6,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 900,
+            "voltageCharge": 3600,
+            "trickleCurrent": 50,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 1,
+                "default": 0.9,
+                "min": 0.6,
+                "step": 0.1,
+                "unit": "V"
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 300,
+                "default": 50,
+                "min": 50,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              }
+            ]
+          },
+          {
+            "name": "re_peak",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "voltageDischarge": 600,
+            "voltageCharge": 0,
+            "trickleCurrent": 50,
+            "repeakNumber": 1,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 3,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 300,
+                "default": 60,
+                "min": 50,
+                "step": 1,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              },
+              {
+                "id": 6,
+                "name": "repeak_number",
+                "max": 1,
+                "default": 1,
+                "min": 1,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": ""
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 6,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              }
+            ]
+          },
+          {
+            "name": "cycle",
+            "position": 4,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 600,
+            "voltageCharge": 4350,
+            "trickleCurrent": 50,
+            "repeakNumber": 0,
+            "cycleNumber": 2,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 10,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 2,
+                "min": 1,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": ""
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 300,
+                "default": 50,
+                "min": 50,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 4,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "pb",
+        "type": "Pb",
+        "isShowState": true,
+        "position": 6,
+        "cells": [3, 6, 12],
+        "model": [
+          {
+            "name": "charge",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 1800,
+            "voltageCharge": 2400,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 2.75,
+                "default": 2.4,
+                "min": 2.3,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "agm",
+            "position": 2,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 1800,
+            "voltageCharge": 2450,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 2.75,
+                "default": 2.45,
+                "min": 2.3,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "cold",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 1800,
+            "voltageCharge": 2450,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 10,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 10,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 2.75,
+                "default": 2.45,
+                "min": 2.3,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 1,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 1900,
+            "voltageCharge": 2450,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 2,
+                "default": 1.9,
+                "min": 1.8,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "DeviceType": "313030313936",
+    "DeviceName": "D200 Nex",
+    "channel": 2,
+    "menu": 4,
+    "_version": 1.55,
+    "passwordEnable": 1,
+    "setting": {
+      "time": {
+        "id": 1,
+        "max": 720,
+        "min": 1,
+        "step": 1,
+        "enable": 1,
+        "default": 240,
+        "visible": 1
+      },
+      "capacity": {
+        "id": 2,
+        "max": 50000,
+        "min": 100,
+        "step": 100,
+        "enable": 1,
+        "default": 12000,
+        "visible": 1
+      },
+      "temperature": {
+        "id": 5,
+        "max": 65,
+        "min": 40,
+        "step": 1,
+        "enable": 1,
+        "default": 50,
+        "visible": 0
+      },
+      "recycle": {
+        "id": 0,
+        "max": 120,
+        "min": 10,
+        "step": 1,
+        "enable": 1,
+        "default": 10,
+        "visible": 1
+      },
+      "voltage": {
+        "id": 4,
+        "max": 24,
+        "min": 10,
+        "step": 0.1,
+        "enable": 1,
+        "default": 10,
+        "visible": 1
+      },
+      "power": {
+        "id": 7,
+        "max": 800,
+        "min": 100,
+        "step": 50,
+        "enable": 1,
+        "default": 800,
+        "visible": 0
+      },
+      "balanced": {
+        "id": 6,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      },
+      "keyboardSound": {
+        "id": 31,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      },
+      "systemSound": {
+        "id": 32,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      },
+      "version": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 64,
+        "enable": 1,
+        "default": 0,
+        "visible": 1
+      },
+      "dcenable": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      },
+      "dcpower": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      },
+      "dcvoltage": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      },
+      "dccurrent": {
+        "id": 0,
+        "max": 0,
+        "min": 0,
+        "step": 0,
+        "enable": 1,
+        "default": 0,
+        "visible": 0
+      }
+    },
+    "batterys": [
+      {
+        "name": "lipo",
+        "type": "Li",
+        "isShowState": false,
+        "position": 0,
+        "cells": [1, 2, 3, 4, 5, 6],
+        "model": [
+          {
+            "name": "balance",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3300,
+            "voltageCharge": 4200,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 3,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 2,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.25,
+                "default": 4.2,
+                "min": 4.0,
+                "step": 0.01,
+                "unit": "V"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.4,
+                "default": 3.3,
+                "min": 3.0,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "charge",
+            "position": 1,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 3150,
+            "voltageCharge": 4200,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 2,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.25,
+                "default": 4.2,
+                "min": 4.0,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3300,
+            "voltageCharge": 3600,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.4,
+                "default": 3.3,
+                "min": 3.0,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "storage",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3850,
+            "voltageCharge": 3850,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.9,
+                "default": 3.85,
+                "min": 3.75,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "Parallel Charging",
+            "position": 6,
+            "chargeCurrent": 20000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3300,
+            "voltageCharge": 4200,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 3,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 35,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 35,
+                "min": 20,
+                "default": 20,
+                "step": 1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.25,
+                "default": 4.2,
+                "min": 4.0,
+                "step": 0.01,
+                "unit": "V"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.4,
+                "default": 3.3,
+                "min": 3.0,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "liLon",
+        "type": "Li",
+        "isShowState": false,
+        "position": 1,
+        "cells": [1, 2, 3, 4, 5, 6],
+        "model": [
+          {
+            "name": "balance",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3200,
+            "voltageCharge": 4100,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 3,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 2,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.25,
+                "default": 4.1,
+                "min": 4.05,
+                "step": 0.01,
+                "unit": "V"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.3,
+                "default": 3.2,
+                "min": 2.9,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "charge",
+            "position": 1,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 3050,
+            "voltageCharge": 4100,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 2,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.25,
+                "default": 4.1,
+                "min": 4.05,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3200,
+            "voltageCharge": 3600,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.3,
+                "default": 3.2,
+                "min": 2.9,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "storage",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3800,
+            "voltageCharge": 3800,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.85,
+                "default": 3.8,
+                "min": 3.7,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "Parallel Charging",
+            "position": 6,
+            "chargeCurrent": 20000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3200,
+            "voltageCharge": 4200,
+            "trickleCurrent": 0,
+            "repeakNumber": 3,
+            "cycleNumber": 3,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 35,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 35,
+                "min": 20,
+                "default": 20,
+                "step": 1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.12,
+                "default": 4.1,
+                "min": 4.08,
+                "step": 0.01,
+                "unit": "V"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.3,
+                "default": 3.2,
+                "min": 2.9,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "life",
+        "type": "Li",
+        "isShowState": false,
+        "position": 2,
+        "cells": [1, 2, 3, 4, 5, 6],
+        "model": [
+          {
+            "name": "balance",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 2900,
+            "voltageCharge": 3650,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 3,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 2,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 3.7,
+                "default": 3.65,
+                "min": 3.58,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.0,
+                "default": 2.9,
+                "min": 2.6,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "charge",
+            "position": 1,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 2750,
+            "voltageCharge": 3650,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 2,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 3.7,
+                "default": 3.65,
+                "min": 3.58,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 2900,
+            "voltageCharge": 3600,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3,
+                "default": 2.9,
+                "min": 2.6,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "storage",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3300,
+            "voltageCharge": 3300,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 2,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.4,
+                "default": 3.3,
+                "min": 3.25,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "Parallel Charging",
+            "position": 6,
+            "chargeCurrent": 20000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 2900,
+            "voltageCharge": 4200,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 3,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 35,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 35,
+                "min": 20,
+                "default": 20,
+                "step": 1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 3.67,
+                "default": 3.65,
+                "min": 3.63,
+                "step": 0.01,
+                "unit": "V"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.0,
+                "default": 2.9,
+                "min": 2.6,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "lihv",
+        "type": "Li",
+        "isShowState": false,
+        "position": 3,
+        "cells": [1, 2, 3, 4, 5, 6],
+        "model": [
+          {
+            "name": "balance",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3400,
+            "voltageCharge": 4350,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 3,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 2,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.5,
+                "default": 4.35,
+                "min": 4.25,
+                "step": 0.01,
+                "unit": "V"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.5,
+                "default": 3.4,
+                "min": 3.1,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "charge",
+            "position": 1,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 3250,
+            "voltageCharge": 4350,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 2,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 4.5,
+                "default": 4.35,
+                "min": 4.25,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3400,
+            "voltageCharge": 3600,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.5,
+                "default": 3.4,
+                "min": 3.1,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "storage",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 3900,
+            "voltageDischarge": 3900,
+            "voltageCharge": 0,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 20,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 3.95,
+                "default": 3.9,
+                "min": 3.85,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "Parallel Charging",
+            "position": 6,
+            "chargeCurrent": 20000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 3400,
+            "voltageCharge": 4350,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 3,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 35,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 35,
+                "min": 20,
+                "default": 20,
+                "step": 1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 3.67,
+                "default": 3.65,
+                "min": 3.63,
+                "step": 0.01,
+                "unit": "V"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 3.5,
+                "default": 3.4,
+                "min": 3.1,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "nimh",
+        "type": "Ni",
+        "isShowState": true,
+        "position": 4,
+        "cells": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "model": [
+          {
+            "name": "charge",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 600,
+            "voltageCharge": 4,
+            "trickleCurrent": 200,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 6,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 200,
+                "default": 200,
+                "min": 200,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 900,
+            "voltageCharge": 3600,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 1,
+                "default": 0.9,
+                "min": 0.6,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "re_peak",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "voltageDischarge": 600,
+            "voltageCharge": 0,
+            "trickleCurrent": 200,
+            "repeakNumber": 1,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 3,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 6,
+                "name": "repeak_number",
+                "max": 1,
+                "default": 1,
+                "min": 1,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": ""
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 6,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 200,
+                "default": 200,
+                "min": 200,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              }
+            ]
+          },
+          {
+            "name": "cycle",
+            "position": 4,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 900,
+            "voltageCharge": 4350,
+            "trickleCurrent": 200,
+            "repeakNumber": 0,
+            "cycleNumber": 2,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 20,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 1,
+                "default": 0.9,
+                "min": 0.6,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 1,
+                "min": 1,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 200,
+                "default": 200,
+                "min": 200,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 6,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "nicd",
+        "type": "Ni",
+        "isShowState": true,
+        "position": 5,
+        "cells": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "model": [
+          {
+            "name": "charge",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 600,
+            "voltageCharge": 4,
+            "trickleCurrent": 200,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 200,
+                "default": 200,
+                "min": 200,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 5,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 2,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 900,
+            "voltageCharge": 3600,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 1,
+                "default": 0.9,
+                "min": 0.6,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "re_peak",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "voltageDischarge": 600,
+            "voltageCharge": 0,
+            "trickleCurrent": 200,
+            "repeakNumber": 1,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 3,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 200,
+                "default": 200,
+                "min": 200,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              },
+              {
+                "id": 6,
+                "name": "repeak_number",
+                "max": 1,
+                "default": 1,
+                "min": 1,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": ""
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 6,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              }
+            ]
+          },
+          {
+            "name": "cycle",
+            "position": 4,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 900,
+            "voltageCharge": 4350,
+            "trickleCurrent": 200,
+            "repeakNumber": 0,
+            "cycleNumber": 2,
+            "cycleModel": 0,
+            "v": 6,
+            "changeMax": 20,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 1,
+                "default": 0.9,
+                "min": 0.6,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              },
+              {
+                "id": 4,
+                "name": "cycle_model",
+                "max": 1,
+                "default": 0,
+                "min": 0,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": ""
+              },
+              {
+                "id": 5,
+                "name": "cycle_number",
+                "max": 3,
+                "default": 1,
+                "min": 1,
+                "step": 1,
+                "unit": ""
+              },
+              {
+                "id": 3,
+                "name": "track_voltage",
+                "max": 200,
+                "default": 200,
+                "min": 200,
+                "step": 10,
+                "isHavaFirstString": 1,
+                "unit": "mA"
+              },
+              {
+                "id": 7,
+                "name": "v",
+                "max": 12,
+                "default": 6,
+                "min": 3,
+                "step": 1,
+                "isHavaFirstString": 0,
+                "unit": "mV"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "pb",
+        "type": "Pb",
+        "isShowState": true,
+        "position": 6,
+        "cells": [3, 6, 12],
+        "model": [
+          {
+            "name": "charge",
+            "position": 0,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 1800,
+            "voltageCharge": 2400,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 2.75,
+                "default": 2.4,
+                "min": 2.3,
+                "step": 0.01,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "agm",
+            "position": 2,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 1800,
+            "voltageCharge": 2450,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 2.75,
+                "default": 2.45,
+                "min": 2.3,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "cold",
+            "position": 3,
+            "chargeCurrent": 2000,
+            "dischargeCurrent": 0,
+            "voltageDischarge": 1800,
+            "voltageCharge": 2450,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 4,
+            "changeMax": 20,
+            "dischangeMax": 0,
+            "options": [
+              {
+                "id": 0,
+                "name": "charger electricity",
+                "max": 20,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "isHavaFirstString": 0,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_charge",
+                "max": 2.75,
+                "default": 2.45,
+                "min": 2.3,
+                "step": 0.01,
+                "isHavaFirstString": 0,
+                "unit": "V"
+              }
+            ]
+          },
+          {
+            "name": "discharge",
+            "position": 1,
+            "chargeCurrent": 0,
+            "dischargeCurrent": 1000,
+            "voltageDischarge": 1900,
+            "voltageCharge": 2450,
+            "trickleCurrent": 0,
+            "repeakNumber": 0,
+            "cycleNumber": 0,
+            "cycleModel": 0,
+            "v": 0,
+            "changeMax": 0,
+            "dischangeMax": 2,
+            "options": [
+              {
+                "id": 1,
+                "name": "disCharger electricity",
+                "max": 2,
+                "min": 0.1,
+                "default": 0.1,
+                "step": 0.1,
+                "unit": "A"
+              },
+              {
+                "id": 2,
+                "name": "voltage_discharge",
+                "max": 2,
+                "default": 1.9,
+                "min": 1.8,
+                "step": 0.1,
+                "unit": "V"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

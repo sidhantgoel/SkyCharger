@@ -1,0 +1,18 @@
+@use "@fontsource/roboto";
+
+html {
+  height: 100vh;
+}
+
+body {
+  font-family: Roboto, "Open Sans", "Helvetica Neue", sans-serif;
+  margin-left: 0;
+  margin-right: 0;
+  height: 100vh;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
