@@ -1,84 +1,52 @@
+import Favorite from "@mui/icons-material/Favorite";
 import {
-  Box,
   Button,
-  Divider,
   FormControl,
   Grid,
   InputLabel,
-  List,
-  ListItem,
   ListItemText,
   MenuItem,
-  Paper,
   Select,
-  Skeleton,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  TextField,
-  Typography,
 } from "@mui/material";
-import { CHANNEL_LABELS, ChargingChannel } from "src/enums/ChargingChannels";
+import { useDispatch, useSelector } from "react-redux";
+import { StartChargeCommand } from "src/commands/StartChargeCommand";
+import { StopChargeCommand } from "src/commands/StopChargeCommand";
+import { BATTERY_TYPE_ATTR, BatteryType } from "src/enums/BatteryTypes";
+import { ChannelWorkingState } from "src/enums/ChannelWorkingStates";
 import {
-  ChannelWorkingState,
-  STATE_MESSAGES,
-} from "src/enums/ChannelWorkingStates";
-import {
-  BATTERY_CHEMISTRY_ATTR,
-  BATTERY_TYPE_ATTR,
-  BatteryChemistry,
-  BatteryType,
-} from "src/enums/BatteryTypes";
-import { ERROR_MESSAGES } from "src/enums/ErrorCodes";
-import { useEffect, useState, type ReactElement } from "react";
-import {
-  getOperationMode,
-  getOperationModes,
+  CHARGE_PARAMETER_ATTRS,
+  ChargeParameterEnum,
   OPERATION_MODE_DISPLAY_NAMES,
   OperationMode,
 } from "src/enums/OperationModes";
-import { useDispatch, useSelector } from "react-redux";
-import { store } from "src/redux/store";
 import {
   updateBatteryType,
   updateCellCount,
-  updateChargeCurrent,
-  updateChargeVoltage,
-  updateDischargeCurrent,
+  updateChargeParameter,
   updateOperationMode,
 } from "src/redux/slices/channelsSlice";
-import Favorite from "@mui/icons-material/Favorite";
-import { StartChargeCommand } from "src/commands/StartChargeCommand";
+import { store } from "src/redux/store";
 import { bluetoothHelper } from "src/utils/BluetoothHelper";
-import { StopChargeCommand } from "src/commands/StopChargeCommand";
-import { QueryChannelStatusCommand } from "src/commands/QueryChannelStatusCommand";
-import { QueryBasicInfoCommand } from "src/commands/QueryBasicInfoCommand";
 
 interface ChargingPanelProps {
-  channel: ChargingChannel;
+  index: number;
 }
 
 type RootState = ReturnType<typeof store.getState>;
 
-export default function ChargingPanel({ channel }: ChargingPanelProps) {
+export default function ChargingPanel({ index }: ChargingPanelProps) {
+  const channel = useSelector(
+    (state: RootState) => state.channels.channels[index],
+  );
   const chargingOptions = useSelector(
-    (state: RootState) =>
-      state.channels.channelStates.find((ch) => ch.channel === channel)
-        .chargingOptions,
+    (state: RootState) => state.channels.chargingOptions[index],
   );
   const workingState = useSelector(
     (state: RootState) =>
-      state.channels.channelStates.find((ch) => ch.channel === channel)
-        .workingInfo?.workingState,
+      state.channels.channelStates[index].workingInfo?.workingState,
   );
   const deviceType = useSelector(
     (state: RootState) => state.app.machineInfo?.deviceType,
-  );
-  const password = useSelector(
-    (state: RootState) => state.authentication.password,
   );
   const dispatch = useDispatch();
 
@@ -89,14 +57,14 @@ export default function ChargingPanel({ channel }: ChargingPanelProps) {
       chargingOptions?.batteryType,
       chargingOptions?.cellCount,
       chargingOptions?.operationMode,
-      chargingOptions?.chargeCurrent,
-      chargingOptions?.dischargeCurrent,
-      chargingOptions?.chargeVoltage,
-      0,
-      0,
-      0,
-      0,
-      0,
+      chargingOptions?.parameters[ChargeParameterEnum.CHARGE_CURRENT]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.DISCHARGE_CURRENT]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.CHARGE_VOLTAGE]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.DISCHARGE_VOLTAGE]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.CYCLE_MODEL]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.CYCLE_NUMBER]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.REPEAK_NUMBER]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.TRACK_VOLTAGE]?.value,
     );
     bluetoothHelper.sendCommand(command);
   };
@@ -117,17 +85,20 @@ export default function ChargingPanel({ channel }: ChargingPanelProps) {
           >
             <Grid container direction="row" spacing={2} paddingTop={6}>
               <Grid size={4}>
-                <FormControl fullWidth>
+                <FormControl
+                  fullWidth
+                  disabled={workingState === ChannelWorkingState.WORKING}
+                >
                   <InputLabel id="battery-type-select-label">
                     Battery Type
                   </InputLabel>
                   <Select
                     label="Battery Type"
-                    value={chargingOptions?.batteryType}
+                    value={chargingOptions?.batteryType ?? ""}
                     onChange={(e) =>
                       dispatch(
                         updateBatteryType({
-                          channel,
+                          index: index,
                           batteryType: e.target.value as BatteryType,
                           deviceType,
                         }),
@@ -141,17 +112,20 @@ export default function ChargingPanel({ channel }: ChargingPanelProps) {
                 </FormControl>
               </Grid>
               <Grid size={4}>
-                <FormControl fullWidth>
+                <FormControl
+                  fullWidth
+                  disabled={workingState === ChannelWorkingState.WORKING}
+                >
                   <InputLabel id="operation-mode-select-label">
                     Operation Mode
                   </InputLabel>
                   <Select
                     label="Operation Mode"
-                    value={chargingOptions?.operationMode}
+                    value={chargingOptions?.operationMode ?? ""}
                     onChange={(e) =>
                       dispatch(
                         updateOperationMode({
-                          channel,
+                          index: index,
                           operationMode: e.target.value as OperationMode,
                           deviceType,
                         }),
@@ -167,17 +141,24 @@ export default function ChargingPanel({ channel }: ChargingPanelProps) {
                 </FormControl>
               </Grid>
               <Grid size={4}>
-                <FormControl fullWidth>
+                <FormControl
+                  fullWidth
+                  disabled={workingState === ChannelWorkingState.WORKING}
+                >
                   <InputLabel id="cell-count-select-label">
                     Cell Count
                   </InputLabel>
                   <Select
                     label="Cell Count"
-                    value={chargingOptions?.cellCount}
+                    value={
+                      chargingOptions?.cellCount == 0
+                        ? ""
+                        : chargingOptions?.cellCount
+                    }
                     onChange={(e) =>
                       dispatch(
                         updateCellCount({
-                          channel,
+                          index: index,
                           cellCount: e.target.value as number,
                         }),
                       )
@@ -191,103 +172,72 @@ export default function ChargingPanel({ channel }: ChargingPanelProps) {
               </Grid>
             </Grid>
             <Grid container direction="row" spacing={2}>
-              {chargingOptions?.chargeCurrentVisible && (
-                <Grid size={4}>
-                  <FormControl fullWidth>
-                    <InputLabel id="charge-current-select-label">
-                      Charge Current
-                    </InputLabel>
-                    <Select
-                      labelId="charge-current-select-label"
-                      label="Charge Current"
-                      variant="outlined"
-                      value={chargingOptions?.chargeCurrent}
-                      onChange={(e) =>
-                        dispatch(
-                          updateChargeCurrent({
-                            channel,
-                            chargeCurrent: e.target.value as number,
-                          }),
-                        )
-                      }
-                    >
-                      {chargingOptions?.chargeCurrentOptions.map((row) => (
-                        <MenuItem key={row.value} value={row.value}>
-                          <ListItemText primary={`${row.value} mA`} />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
+              {chargingOptions?.parameters.map(
+                (parameter, parameterIndex) =>
+                  parameter && (
+                    <Grid size={4} key={parameterIndex}>
+                      <FormControl
+                        fullWidth
+                        disabled={workingState === ChannelWorkingState.WORKING}
+                      >
+                        <InputLabel id={`${parameterIndex}-select-label`}>
+                          {
+                            CHARGE_PARAMETER_ATTRS[
+                              parameterIndex as ChargeParameterEnum
+                            ].displayName
+                          }
+                        </InputLabel>
+                        <Select
+                          labelId={`${parameterIndex}-select-label`}
+                          label={
+                            CHARGE_PARAMETER_ATTRS[
+                              parameterIndex as ChargeParameterEnum
+                            ].displayName
+                          }
+                          value={parameter.value}
+                          renderValue={(selected) =>
+                            selected +
+                            " " +
+                            CHARGE_PARAMETER_ATTRS[
+                              parameterIndex as ChargeParameterEnum
+                            ].unit
+                          }
+                          onChange={(e) =>
+                            dispatch(
+                              updateChargeParameter({
+                                index: index,
+                                parameter: parameterIndex,
+                                value: e.target.value as number,
+                              }),
+                            )
+                          }
+                        >
+                          {parameter.options.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                              <Favorite
+                                fontSize="small"
+                                style={{
+                                  marginRight: 8,
+                                  padding: 9,
+                                  boxSizing: "content-box",
+                                  visibility: option.default
+                                    ? "visible"
+                                    : "hidden",
+                                }}
+                              />
+                              {option.value}{" "}
+                              {
+                                CHARGE_PARAMETER_ATTRS[
+                                  parameterIndex as ChargeParameterEnum
+                                ].unit
+                              }
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  ),
               )}
-              {chargingOptions?.dischargeCurrentVisible && (
-                <Grid size={4}>
-                  <FormControl fullWidth>
-                    <InputLabel id="discharge-current-select-label">
-                      Discharge Current
-                    </InputLabel>
-                    <Select
-                      labelId="discharge-current-select-label"
-                      label="Discharge Current"
-                      variant="outlined"
-                      value={chargingOptions?.dischargeCurrent}
-                      onChange={(e) =>
-                        dispatch(
-                          updateDischargeCurrent({
-                            channel,
-                            dischargeCurrent: e.target.value as number,
-                          }),
-                        )
-                      }
-                    >
-                      {chargingOptions?.dischargeCurrentOptions.map((row) => (
-                        <MenuItem key={row.value} value={row.value}>
-                          <ListItemText primary={`${row.value} mA`} />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              )}
-              <Grid size={4}>
-                <FormControl fullWidth>
-                  <InputLabel id="charge-voltage-select-label">
-                    Charge Voltage
-                  </InputLabel>
-                  <Select
-                    labelId="charge-voltage-select-label"
-                    label="Charge Voltage"
-                    variant="outlined"
-                    renderValue={(selected) => (
-                      <ListItemText>{selected + " mV"}</ListItemText>
-                    )}
-                    value={chargingOptions?.chargeVoltage}
-                    onChange={(e) =>
-                      dispatch(
-                        updateChargeVoltage({
-                          channel,
-                          chargeVoltage: e.target.value as number,
-                        }),
-                      )
-                    }
-                  >
-                    {chargingOptions?.chargeVoltageOptions.map((row) => (
-                      <MenuItem key={row.value} value={row.value}>
-                        <Favorite
-                          fontSize="small"
-                          style={{
-                            marginRight: 8,
-                            padding: 9,
-                            boxSizing: "content-box",
-                            visibility: row.default ? "visible" : "hidden",
-                          }}
-                        />
-                        <ListItemText primary={`${row.value} mV`} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
             </Grid>
             <Grid container direction="row" spacing={2}>
               <Grid size={4}></Grid>

@@ -99,9 +99,6 @@ const MainPage = () => {
   const passwordDialogOpen = useSelector(
     (state: RootState) => state.authentication.passwordDialogOpen,
   );
-  const passwordRequired = useSelector(
-    (state: RootState) => state.channels.passwordRequired,
-  );
   const deviceName = useSelector(
     (state: RootState) => DEVICE_ATTR[state.app.machineInfo?.deviceType]?.name,
   );
@@ -140,16 +137,16 @@ const MainPage = () => {
           dispatch(updateMachineInfo(machineInfo));
         }
         break;
-        case CommandEnum.QUERY_BASIC_INFO:
-          const basicInfo = parseBasicInfo(data);
-          if (basicInfo) {
-            if(!basicInfo.checkPassword) {
-              dispatch(openPasswordDialog(true));
-            } else {
-                dispatch(setPasswordOk(true));
-            }
+      case CommandEnum.QUERY_BASIC_INFO:
+        const basicInfo = parseBasicInfo(data);
+        if (basicInfo) {
+          if (!basicInfo.checkPassword) {
+            dispatch(openPasswordDialog(true));
+          } else {
+            dispatch(setPasswordOk(true));
           }
-          break;
+        }
+        break;
       default:
         break;
     }
@@ -163,17 +160,15 @@ const MainPage = () => {
   }, []);
 
   useEffect(() => {
-    if(passwordOk) {
-      dispatch(
-        createChannels(DEVICE_ATTR[deviceType].channels),
-      );
+    if (passwordOk) {
+      dispatch(createChannels(DEVICE_ATTR[deviceType].channels));
       dispatch(updateSelectedTab(0));
       dispatch(updateConnected());
     }
   }, [passwordOk]);
 
   useEffect(() => {
-    if(deviceType) {
+    if (deviceType) {
       getBasicInfo(DEVICE_ATTR[deviceType].channels[0]);
     }
   }, [deviceType]);
@@ -191,7 +186,7 @@ const MainPage = () => {
     });
     dispatch(stopScanning());
     const success = await bluetoothHelper.connect(selectedDevice);
-    if(!success) {
+    if (!success) {
       dispatch(updateDisconnected());
       return;
     }
@@ -223,12 +218,6 @@ const MainPage = () => {
     getBasicInfo(DEVICE_ATTR[deviceType].channels[0]);
   };
 
-  useEffect(() => {
-    if (passwordRequired) {
-      dispatch(openPasswordDialog(true));
-    }
-  }, [passwordRequired]);
-
   interface TabPanelProps {
     children?: React.ReactNode;
     dir?: string;
@@ -257,7 +246,11 @@ const MainPage = () => {
       <Grid
         container
         direction="column"
-        sx={{ alignItems: "stretch", justifyContent: "stretch", flexGrow: 1 }}
+        sx={{
+          alignItems: "stretch",
+          justifyContent: "stretch",
+          flexGrow: 1,
+        }}
       >
         <Grid size={2}>&nbsp;</Grid>
         <Grid container size="auto" spacing={2} justifyContent={"center"}>
@@ -325,7 +318,7 @@ const MainPage = () => {
           <Paper elevation={3} style={{ flexGrow: 1 }} square={true}>
             {channels.map((channel, index) => (
               <TabPanel value={selectedTab} index={index} key={channel}>
-                <ChannelTabPanel channel={channel} />
+                <ChannelTabPanel index={index} />
               </TabPanel>
             ))}
             {connected && (

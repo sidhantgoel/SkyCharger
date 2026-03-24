@@ -1,35 +1,46 @@
-import { Grid } from "@mui/material";
-import { ChargingChannel } from "src/enums/ChargingChannels";
-import ChannelDetailsPanel from "./ChannelDetailsPanel";
-import ChargingPanel from "./ChargingPanel";
-import { useEffect } from "react";
-import { bluetoothHelper } from "src/utils/BluetoothHelper";
-import { QueryBasicInfoCommand } from "src/commands/QueryBasicInfoCommand";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "src/redux/store";
+import { QueryBasicInfoCommand } from "src/commands/QueryBasicInfoCommand";
 import { QueryChannelStatusCommand } from "src/commands/QueryChannelStatusCommand";
-import PasswordDialog from "./PasswordDialog";
-import {
-  closePasswordDialog,
-  openPasswordDialog,
-  setPassword,
-} from "src/redux/slices/authenticationSlice";
-import { disconnectDevice, updateBasicInfo } from "src/redux/thunks";
+import { QueryVoltageInfoCommand } from "src/commands/QueryVoltageInfo";
+import { ChannelWorkingState } from "src/enums/ChannelWorkingStates";
 import { CommandEnum } from "src/enums/Commands";
+import {
+  updateVoltageInfo,
+  updateWorkingInfo,
+} from "src/redux/slices/channelsSlice";
+import { AppDispatch, RootState } from "src/redux/store";
+import { updateBasicInfo } from "src/redux/thunks";
 import { parseBasicInfo } from "src/responses/ChannelBasicInfo";
 import { parseChannelWorkingInfo } from "src/responses/ChannelWorkingInfo";
-import { updateVoltageInfo, updateWorkingInfo } from "src/redux/slices/channelsSlice";
-import { QueryVoltageInfoCommand } from "src/commands/QueryVoltageInfo";
 import { parseVoltageInfo } from "src/responses/QueryVoltageInfoResponse";
+import { bluetoothHelper } from "src/utils/BluetoothHelper";
+import ErrorDetailsPanel from "./ErrorDetailsPanel";
+import FinishedDetailsPanel from "./FinishedDetailsPanel";
+import IdleDetailsPanel from "./IdleDetailsPanel";
+import WorkingDetailsPanel from "./WorkingDetailsPanel";
 
 interface ChannelTabPanelProps {
-  channel: ChargingChannel;
+  index: number;
 }
 
-export default function ChannelTabPanel({ channel }: ChannelTabPanelProps) {
+export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
   const password = useSelector(
     (state: RootState) => state.authentication.password,
   );
+  const channel = useSelector(
+    (state: RootState) => state.channels.channels[index],
+  );
+  const workingState = useSelector(
+    (state: RootState) =>
+      state.channels.channelStates[index].workingInfo?.workingState,
+  );
+  const workingStateRef = useRef(workingState);
+
+  useEffect(() => {
+    workingStateRef.current = workingState;
+  }, [workingState]);
+
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -49,21 +60,34 @@ export default function ChannelTabPanel({ channel }: ChannelTabPanelProps) {
       case CommandEnum.QUERY_BASIC_INFO:
         const basicInfo = parseBasicInfo(data);
         if (basicInfo) {
-          dispatch(updateBasicInfo(basicInfo));
+          dispatch(updateBasicInfo(index, basicInfo));
           getChannelStatus();
         }
         break;
       case CommandEnum.QUERY_CHANNEL_STATUS:
         const workingInfo = parseChannelWorkingInfo(data);
         if (workingInfo) {
-          dispatch(updateWorkingInfo(workingInfo));
+          dispatch(
+            updateWorkingInfo({
+              index: index,
+              workingInfo: workingInfo,
+            }),
+          );
+          if (workingStateRef.current !== ChannelWorkingState.IDLE) {
+            return;
+          }
           getVoltageInfo();
         }
         break;
       case CommandEnum.QUERY_VOLTAGE_INFO:
         const voltageInfo = parseVoltageInfo(data);
         if (voltageInfo) {
-          dispatch(updateVoltageInfo(voltageInfo));
+          dispatch(
+            updateVoltageInfo({
+              index: index,
+              voltageInfo: voltageInfo,
+            }),
+          );
         }
         break;
       default:
@@ -85,16 +109,40 @@ export default function ChannelTabPanel({ channel }: ChannelTabPanelProps) {
     await bluetoothHelper.sendCommand(new QueryChannelStatusCommand(channel));
   };
 
-  return (
-    <>
-      <Grid container direction="row" spacing={2}>
-        <Grid size={6}>
-          <ChannelDetailsPanel channel={channel} />
-        </Grid>
-        <Grid size={6}>
-          <ChargingPanel channel={channel} />
-        </Grid>
-      </Grid>
-    </>
-  );
+  if (workingState === ChannelWorkingState.IDLE) {
+    return <IdleDetailsPanel index={index} />;
+  } else if (workingState === ChannelWorkingState.WORKING) {
+    return <WorkingDetailsPanel index={index} />;
+  } else if (workingState === ChannelWorkingState.DONE) {
+    return <FinishedDetailsPanel index={index} />;
+  } else if (workingState === ChannelWorkingState.ERROR) {
+    return <ErrorDetailsPanel index={index} />;
+  }
+  return <></>;
+
+  // return (
+  //   <>
+  //     <Grid container direction="row" spacing={2}>
+  //       <Grid size={6}>
+  //         {(() => {
+  //           switch (workingState) {
+  //             case ChannelWorkingState.IDLE:
+  //               return <IdleDetailsPanel index={index} />;
+  //             case ChannelWorkingState.WORKING:
+  //               return <WorkingDetailsPanel index={index} />;
+  //             case ChannelWorkingState.DONE:
+  //               return <FinishedDetailsPanel index={index} />;
+  //             case ChannelWorkingState.ERROR:
+  //               return <ErrorDetailsPanel index={index} />;
+  //             default:
+  //               return <></>;
+  //           }
+  //         })()}
+  //       </Grid>
+  //       <Grid size={6}>
+  //         <ChargingPanel index={index} />
+  //       </Grid>
+  //     </Grid>
+  //   </>
+  // );
 }

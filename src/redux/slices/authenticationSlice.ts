@@ -35,6 +35,11 @@ const authenticationSlice = createSlice({
   },
 });
 
-export const { setPassword, openPasswordDialog, closePasswordDialog, setPasswordOk, resetAuthentication } =
-  authenticationSlice.actions;
+export const {
+  setPassword,
+  openPasswordDialog,
+  closePasswordDialog,
+  setPasswordOk,
+  resetAuthentication,
+} = authenticationSlice.actions;
 export default authenticationSlice;

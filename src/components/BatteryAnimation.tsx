@@ -1,4 +1,5 @@
 import * as React from "react";
+import { motion } from "motion/react";
 
 export type BatteryAnimationProps = React.SVGProps<SVGSVGElement> & {
   /** When false, bars stay solid with no pulse. Default: true. */
@@ -8,11 +9,6 @@ export type BatteryAnimationProps = React.SVGProps<SVGSVGElement> & {
    * stay fully filled (no animation). Default: 0 (all bars animate from empty).
    */
   startFromBar?: number;
-  /**
-   * Wall-clock duration of each bar’s 0→1 opacity fade (milliseconds).
-   * Default matches the previous built-in fade length.
-   */
-  fadeMs?: number;
   /**
    * Seconds between consecutive bars appearing (same spacing from empty to the first bar).
    * One full loop lasts `barAppearIntervalS * (animatedBarCount + 1)` seconds.
@@ -33,162 +29,70 @@ const CHARGE_BAR_PATHS = [
 
 const DEFAULT_BAR_COLOR = "rgb(9,175,84)";
 
-/** Tight bbox of all paths (was 53×53 with large empty margins). */
 const VIEWBOX_X = 2.5;
 const VIEWBOX_Y = 14.68392;
 const VIEWBOX_W = 48;
 const VIEWBOX_H = 23.63216;
 const VIEWBOX_STR = `${VIEWBOX_X} ${VIEWBOX_Y} ${VIEWBOX_W} ${VIEWBOX_H}`;
-/** Reference full-loop length when all `N` bars animate (used to derive default bar spacing). */
-const DEFAULT_CYCLE_DURATION_S = 3.5;
-const N = CHARGE_BAR_PATHS.length;
-/** Default gap between bars: one timeline slot out of `N + 1` (empty + N bars). */
-const DEFAULT_BAR_APPEAR_INTERVAL_S = DEFAULT_CYCLE_DURATION_S / (N + 1);
 
-/**
- * Default 0→1 opacity ramp (ms). Values ≪ ~16ms often look identical on 60Hz (one frame).
- */
-const DEFAULT_FADE_MS = 0.012;
-
-function pct(n: number): string {
-  return `${n.toFixed(10)}%`;
-}
-
-/** Stable CSS identifier fragment so @keyframes names change when fade/cycle change (avoids stale keyframes). */
-function animIdPart(n: number): string {
-  return String(n).replace(/\./g, "p").replace(/-/g, "neg");
-}
-
-function barAnimName(
-  waveId: string,
-  localIndex: number,
-  barCount: number,
-  fadeMs: number,
-  cycleS: number,
-): string {
-  return `${waveId}-fill-m${barCount}-${localIndex}-fade${animIdPart(fadeMs)}-cyc${animIdPart(cycleS)}`;
-}
-
-/**
- * Cumulative fill among `barCount` animated segments. Fade `fill-opacity` 0 → 1 (SVG paths often
- * ignore animated `opacity` when `fill` is set; `fill-opacity` is reliable). `fadeMs` sets ramp
- * length as % of the cycle, capped to one slot.
- */
-function fillKeyframesCss(
-  waveId: string,
-  localIndex: number,
-  barCount: number,
-  cycleS: number,
-  fadeMs: number,
-): string {
-  const slotPct = 100 / (barCount + 1);
-  const turnOnPct = (localIndex + 1) * slotPct;
-  const fadeSpanFromMs = (fadeMs / 1000 / cycleS) * 100;
-  const fadeSpanPct = Math.min(fadeSpanFromMs, slotPct * 0.92);
-  const fadeStartPct = Math.max(localIndex * slotPct, turnOnPct - fadeSpanPct);
-  const name = barAnimName(waveId, localIndex, barCount, fadeMs, cycleS);
-  return `@keyframes ${name} {
-  0%, ${pct(fadeStartPct)} { fill-opacity: 0; }
-  ${pct(turnOnPct)}%, 100% { fill-opacity: 1; }
-}`;
-}
+const DEFAULT_BAR_APPEAR_INTERVAL_S = 1;
 
 const BatteryAnimation = ({
   charging = true,
   startFromBar = 0,
-  fadeMs = DEFAULT_FADE_MS,
   barAppearIntervalS = DEFAULT_BAR_APPEAR_INTERVAL_S,
   barColor = DEFAULT_BAR_COLOR,
   className,
   ...props
 }: BatteryAnimationProps) => {
-  const waveId = React.useId().replace(/:/g, "");
-  const clampedStart = Math.min(Math.max(0, Math.floor(startFromBar)), N);
-  const animatedCount = N - clampedStart;
-  const cycleDurationS =
-    animatedCount > 0
-      ? barAppearIntervalS * (animatedCount + 1)
-      : DEFAULT_CYCLE_DURATION_S;
-
-  /** Remount when timing props change so the engine reapplies keyframes (Electron/SVG can cache). */
-  const svgAnimKey = `${fadeMs}-${cycleDurationS}-${barAppearIntervalS}-${clampedStart}-${barColor}`;
-
-  const animatedKeyframes =
-    animatedCount > 0
-      ? Array.from({ length: animatedCount }, (_, j) =>
-          fillKeyframesCss(waveId, j, animatedCount, cycleDurationS, fadeMs),
-        ).join("\n")
-      : "";
-  const animatedRules =
-    animatedCount > 0
-      ? Array.from({ length: animatedCount }, (_, j) => {
-          const cls = barAnimName(
-            waveId,
-            j,
-            animatedCount,
-            fadeMs,
-            cycleDurationS,
-          );
-          return `
-          .${cls} {
-            animation: ${cls} ${cycleDurationS}s linear infinite;
-          }`;
-        }).join("")
-      : "";
+  const staticBars = CHARGE_BAR_PATHS.slice(0, startFromBar);
+  const animatedBars = charging ? CHARGE_BAR_PATHS.slice(startFromBar) : [];
 
   return (
-    <svg
-      key={svgAnimKey}
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      width={VIEWBOX_W}
-      height={VIEWBOX_H}
-      viewBox={VIEWBOX_STR}
-      className={className}
-      {...props}
-    >
-      <style>{`
-${animatedKeyframes}
-${animatedRules}
-          .${waveId}-bar-static {
-            opacity: 1;
-            fill-opacity: 1;
-            animation: none;
-          }
-        `}</style>
-      <path
+    <motion.svg viewBox={VIEWBOX_STR} width={VIEWBOX_W} height={VIEWBOX_H}>
+      <motion.path
         transform="translate(0,0)"
         style={{ fill: "rgb(237,237,237)" }}
         strokeLinecap="round"
         d="M 46.42014 17.68392 L 46.42014 35.31608 C 46.42014 36.97293 45.077 38.31608 43.42014 38.31608 L 5.5 38.31608 C 3.84315 38.31608 2.5 36.97293 2.5 35.31608 L 2.5 17.68392 C 2.5 16.02707 3.84315 14.68392 5.5 14.68392 L 43.42014 14.68392 C 45.077 14.68392 46.42014 16.02707 46.42014 17.68392 Z"
       />
-      {CHARGE_BAR_PATHS.map((d, i) => (
-        <path
+      {staticBars.map((d, i) => (
+        <motion.path
           key={i}
           transform="translate(0,0)"
           strokeLinecap="round"
           d={d}
-          className={
-            !charging || i < clampedStart || animatedCount === 0
-              ? `${waveId}-bar-static`
-              : barAnimName(
-                  waveId,
-                  i - clampedStart,
-                  animatedCount,
-                  fadeMs,
-                  cycleDurationS,
-                )
-          }
           style={{ fill: barColor }}
         />
       ))}
-      <path
+      {animatedBars.map((d, i) => (
+        <motion.path
+          key={i}
+          animate={{ opacity: [0, null, 1, null, 0] }}
+          transition={{
+            duration: (animatedBars.length + 1) * barAppearIntervalS,
+            times: [
+              0,
+              (i + 1) / (animatedBars.length + 1),
+              (i + 1 + 2) / (animatedBars.length + 1),
+              1,
+              1,
+            ],
+            repeat: Infinity,
+          }}
+          transform="translate(0,0)"
+          strokeLinecap="round"
+          d={d}
+          style={{ fill: barColor }}
+        />
+      ))}
+      <motion.path
         transform="translate(0,0)"
         style={{ fill: "rgb(219,219,219)" }}
         strokeLinecap="round"
         d="M 46.42014 22.29215 L 46.42014 30.70785 L 48.5 30.70785 C 49.60457 30.70785 50.5 29.81242 50.5 28.70785 L 50.5 24.29215 C 50.5 23.18758 49.60457 22.29215 48.5 22.29215 Z"
       />
-    </svg>
+    </motion.svg>
   );
 };
 

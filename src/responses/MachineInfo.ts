@@ -29,7 +29,7 @@ export function parseMachineInfo(
   const deviceBytes = d.slice(1, 7);
   const deviceType = getDeviceTypeFromBytes(deviceBytes);
   const version = d[12] + d[13] / 100;
-  const sn = Buffer.from(d.slice(1)).toString('hex');
+  const sn = Buffer.from(d.slice(1)).toString("hex");
 
   return createMachineInfo(deviceType, version, sn);
 }

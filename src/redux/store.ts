@@ -8,12 +8,15 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const persistConfig = {
-    key: "authentication",
-    storage,
-    blacklist: ["passwordOk"],
+  key: "authentication",
+  storage,
+  blacklist: ["passwordOk"],
 };
 
-const persistedReducer = persistReducer(persistConfig, authenticationSlice.reducer)
+const persistedReducer = persistReducer(
+  persistConfig,
+  authenticationSlice.reducer,
+);
 export const store = configureStore({
   reducer: {
     connection: connectionSlice.reducer,

@@ -26,7 +26,7 @@ export class BluetoothHelper {
       value.byteOffset,
       value.byteLength,
     );
-    console.log("Received data: " + Buffer.from(data).toString('hex'));
+    console.log("Received data: " + Buffer.from(data).toString("hex"));
     for (const byte of data) {
       let isValid = responseParser.consume(byte);
       if (isValid) {
@@ -44,18 +44,18 @@ export class BluetoothHelper {
     if (!device.gatt) return;
     const release = await this.mutex.acquire();
     try {
-        this.server = await device.gatt.connect();
-        const service = await this.server.getPrimaryService(
+      this.server = await device.gatt.connect();
+      const service = await this.server.getPrimaryService(
         BluetoothHelper.SERVICE_UUID,
-        );
-        this.characteristic = await service.getCharacteristic(
+      );
+      this.characteristic = await service.getCharacteristic(
         BluetoothHelper.CHARACTERISTIC_UUID,
-        );
-        this.characteristic.addEventListener(
+      );
+      this.characteristic.addEventListener(
         "characteristicvaluechanged",
         this.charecteristicCallback,
-        );
-        await this.characteristic.startNotifications();
+      );
+      await this.characteristic.startNotifications();
     } catch (error) {
       console.error("error connecting to device", error);
       return false;
@@ -98,8 +98,10 @@ export class BluetoothHelper {
       return;
     }
     try {
-        const encodedCommand = command.encode();
-        console.log("Sending command: " + Buffer.from(encodedCommand).toString('hex'));
+      const encodedCommand = command.encode();
+      console.log(
+        "Sending command: " + Buffer.from(encodedCommand).toString("hex"),
+      );
       await this.characteristic.writeValueWithResponse(
         encodedCommand as BufferSource,
       );

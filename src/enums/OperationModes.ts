@@ -9,13 +9,71 @@ export enum OperationMode {
   AUTO_CHARGE,
   RE_PEAK,
   CYCLE,
+  AGM,
+  COLD,
 }
+
+export enum ChargeParameterEnum {
+  CHARGE_CURRENT,
+  DISCHARGE_CURRENT,
+  CHARGE_VOLTAGE,
+  DISCHARGE_VOLTAGE,
+  CYCLE_MODEL,
+  CYCLE_NUMBER,
+  REPEAK_NUMBER,
+  TRACK_VOLTAGE,
+  VOLTAGE,
+}
+
+interface ChargeParameterAttr {
+  displayName: string;
+  unit: string;
+}
+
+export const CHARGE_PARAMETER_ATTRS: Record<
+  ChargeParameterEnum,
+  ChargeParameterAttr
+> = {
+  [ChargeParameterEnum.CHARGE_CURRENT]: {
+    displayName: "Charge Current",
+    unit: "mA",
+  },
+  [ChargeParameterEnum.DISCHARGE_CURRENT]: {
+    displayName: "Discharge Current",
+    unit: "mA",
+  },
+  [ChargeParameterEnum.CHARGE_VOLTAGE]: {
+    displayName: "Charge Voltage",
+    unit: "mV",
+  },
+  [ChargeParameterEnum.DISCHARGE_VOLTAGE]: {
+    displayName: "Discharge Voltage",
+    unit: "mV",
+  },
+  [ChargeParameterEnum.CYCLE_MODEL]: {
+    displayName: "Cycle Model",
+    unit: "",
+  },
+  [ChargeParameterEnum.CYCLE_NUMBER]: {
+    displayName: "Cycle Number",
+    unit: "",
+  },
+  [ChargeParameterEnum.REPEAK_NUMBER]: {
+    displayName: "Repeak Number",
+    unit: "",
+  },
+  [ChargeParameterEnum.TRACK_VOLTAGE]: {
+    displayName: "Track Voltage",
+    unit: "mV",
+  },
+  [ChargeParameterEnum.VOLTAGE]: {
+    displayName: "Voltage",
+    unit: "mV",
+  },
+};
 
 interface OperationModeAttr {
   displayName: string;
-  balance: boolean;
-  requireChargeCurrent: boolean;
-  requireDischargeCurrent: boolean;
 }
 
 export const OPERATION_MODE_DISPLAY_NAMES: Record<
@@ -24,51 +82,33 @@ export const OPERATION_MODE_DISPLAY_NAMES: Record<
 > = {
   [OperationMode.BALANCE_CHARGE]: {
     displayName: "Balance Charge",
-    balance: true,
-    requireChargeCurrent: true,
-    requireDischargeCurrent: false,
   },
   [OperationMode.CHARGE]: {
     displayName: "Charge",
-    balance: false,
-    requireChargeCurrent: true,
-    requireDischargeCurrent: false,
   },
   [OperationMode.DISCHARGE]: {
     displayName: "Discharge",
-    balance: false,
-    requireChargeCurrent: false,
-    requireDischargeCurrent: true,
   },
   [OperationMode.STORAGE]: {
     displayName: "Storage",
-    balance: false,
-    requireChargeCurrent: true,
-    requireDischargeCurrent: true,
   },
   [OperationMode.FAST_CHARGE]: {
     displayName: "Fast Charge",
-    balance: false,
-    requireChargeCurrent: true,
-    requireDischargeCurrent: false,
   },
   [OperationMode.AUTO_CHARGE]: {
     displayName: "Auto Charge",
-    balance: false,
-    requireChargeCurrent: true,
-    requireDischargeCurrent: false,
   },
   [OperationMode.RE_PEAK]: {
     displayName: "Re Peak",
-    balance: false,
-    requireChargeCurrent: true,
-    requireDischargeCurrent: false,
   },
   [OperationMode.CYCLE]: {
     displayName: "Cycle",
-    balance: false,
-    requireChargeCurrent: true,
-    requireDischargeCurrent: true,
+  },
+  [OperationMode.AGM]: {
+    displayName: "AGM",
+  },
+  [OperationMode.COLD]: {
+    displayName: "Cold",
   },
 };
 

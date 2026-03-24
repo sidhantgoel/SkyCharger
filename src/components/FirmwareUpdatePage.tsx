@@ -33,7 +33,6 @@ function UpdateDialog({
   progress: number;
   updating: boolean;
 }) {
-
   return (
     <Dialog open={open} maxWidth="sm" fullWidth>
       <DialogTitle>Firmware Update</DialogTitle>
@@ -65,24 +64,27 @@ function UpdateDialog({
 }
 
 interface VersionInfo {
-    id: string;
-    timestamp: number;
-    version: number;
-    checksum: number;
-    download_url: string;
+  id: string;
+  timestamp: number;
+  version: number;
+  checksum: number;
+  download_url: string;
 }
 
 async function fetchVersionInfo(sn: string): Promise<VersionInfo[]> {
-    const headers: Headers = new Headers();
-    headers.set('sn', sn);
-    const request: RequestInfo = new Request('https://upgrade.skyrc.com/?SN=' + sn, {
-        method: 'GET',
-        headers: headers
-      })
-    const response = await fetch(request);
-    const data = await response.json();
-    return data;
-  }
+  const headers: Headers = new Headers();
+  headers.set("sn", sn);
+  const request: RequestInfo = new Request(
+    "https://upgrade.skyrc.com/?SN=" + sn,
+    {
+      method: "GET",
+      headers: headers,
+    },
+  );
+  const response = await fetch(request);
+  const data = await response.json();
+  return data;
+}
 
 export default function FirmwareUpdatePage() {
   const firmwareUpdator = new FirmwareUpdator(bluetoothHelper);
@@ -90,74 +92,112 @@ export default function FirmwareUpdatePage() {
   const [message, setMessage] = useState<string>("");
   const [updating, setUpdating] = useState<boolean>(false);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const currentVersion = useSelector((state: RootState) => state.app.machineInfo.version);
+  const currentVersion = useSelector(
+    (state: RootState) => state.app.machineInfo.version,
+  );
   const sn = useSelector((state: RootState) => state.app.machineInfo.sn);
   const [newVersion, setNewVersion] = useState<number>(0);
   const [downloadUrl, setDownloadUrl] = useState<string>("");
   const [checksum, setChecksum] = useState<number>(0);
 
   const notify = (command: CommandEnum, data: Uint8Array) => {
-    if(command === CommandEnum.CHECK_BOOT_VERSION) {
-        const bootVersion = parseBootVersion(data);
-        console.log(`Boot version: ${bootVersion?.bootVersion}`);
-        // checkNewVersion();
+    if (command === CommandEnum.CHECK_BOOT_VERSION) {
+      const bootVersion = parseBootVersion(data);
+      console.log(`Boot version: ${bootVersion?.bootVersion}`);
+      // checkNewVersion();
     }
-    if(command === CommandEnum.CHECK_NEW_VERSION) {
-        const haveNewVersion = parseCheckNewVersion(data);
-        console.log(`Have new version: ${haveNewVersion}`);
+    if (command === CommandEnum.CHECK_NEW_VERSION) {
+      const haveNewVersion = parseCheckNewVersion(data);
+      console.log(`Have new version: ${haveNewVersion}`);
     }
-}
+  };
 
-useEffect(() => {
+  useEffect(() => {
     bluetoothHelper.addOnNotifyListener(notify);
     fetchVersionInfo(sn).then((versionInfo) => {
-        setNewVersion(versionInfo[0].version);
-        setDownloadUrl(versionInfo[0].download_url);
-        setChecksum(versionInfo[0].checksum);
+      setNewVersion(versionInfo[0].version);
+      setDownloadUrl(versionInfo[0].download_url);
+      setChecksum(versionInfo[0].checksum);
     });
     return () => {
-        bluetoothHelper.removeOnNotifyListener(notify);
-    }
-}, []);
+      bluetoothHelper.removeOnNotifyListener(notify);
+    };
+  }, []);
 
   const handleClose = () => {
     setDialogOpen((prev) => false);
   };
 
   const startFirmwareUpdate = async () => {
-    setUpdating(prev => true);
-    setDialogOpen(prev => true);
-    setMessage(prev => 'Downloading firmware file...');
+    setUpdating((prev) => true);
+    setDialogOpen((prev) => true);
+    setMessage((prev) => "Downloading firmware file...");
     const result = await fetch(downloadUrl);
     const data = await result.arrayBuffer();
     const firmwareUpdateData = new Uint8Array(data);
-    const updateResult = await firmwareUpdator.updateFirmware(firmwareUpdateData, checksum, (message: string, progress: number) => {
-        setMessage(prev => message);
-        setProgress(prev => progress);
-    });
-    if(!updateResult) {
-        setMessage(prev => 'Firmware update failed.');
+    const updateResult = await firmwareUpdator.updateFirmware(
+      firmwareUpdateData,
+      checksum,
+      (message: string, progress: number) => {
+        setMessage((prev) => message);
+        setProgress((prev) => progress);
+      },
+    );
+    if (!updateResult) {
+      setMessage((prev) => "Firmware update failed.");
     }
-    setUpdating(prev => false);
+    setUpdating((prev) => false);
   };
   return (
     <React.Fragment>
-        <Grid container spacing={2} flexDirection={"column"} alignItems={"center"} justifyContent={"center"}>
-            <Grid container size={12} alignItems={"center"} justifyContent={"center"}>
-                <Typography variant="h6">Firmware Update</Typography>
-            </Grid>
-            <Grid container size={12} alignItems={"center"} justifyContent={"center"}>
-                <Typography variant="body1">Current Version: {currentVersion}</Typography>
-            </Grid>
-            <Grid container size={12} alignItems={"center"} justifyContent={"center"}>
-                <Typography variant="body1">New Version: {newVersion}</Typography>
-            </Grid>
-            <Grid container size={12} alignItems={"center"} justifyContent={"center"}>
-                <Button variant="contained" color="primary" onClick={startFirmwareUpdate}>
-                    Start Firmware Update
-                </Button>
-            </Grid>
+      <Grid
+        container
+        spacing={2}
+        flexDirection={"column"}
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
+        <Grid
+          container
+          size={12}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          <Typography variant="h6">Firmware Update</Typography>
         </Grid>
+        <Grid
+          container
+          size={12}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          <Typography variant="body1">
+            Current Version: {currentVersion}
+          </Typography>
+        </Grid>
+        <Grid
+          container
+          size={12}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          <Typography variant="body1">New Version: {newVersion}</Typography>
+        </Grid>
+        <Grid
+          container
+          size={12}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={startFirmwareUpdate}
+          >
+            Start Firmware Update
+          </Button>
+        </Grid>
+      </Grid>
       <UpdateDialog
         open={dialogOpen}
         handleClose={handleClose}

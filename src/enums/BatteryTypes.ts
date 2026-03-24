@@ -1,4 +1,5 @@
-/** Battery chemistry category. */
+import { OperationMode } from "./OperationModes";
+
 export enum BatteryChemistry {
   LITHIUM,
   NICKEL,
@@ -10,7 +11,6 @@ export enum BatteryCycleType {
   DISCHARGE_CHARGE = 0x01,
 }
 
-/** Battery type (matches device byte values 0–7). */
 export enum BatteryType {
   LI_PO = 0x00,
   LI_IO = 0x01,
@@ -57,67 +57,42 @@ export const BATTERY_CHEMISTRY_ATTR: Record<
   },
 };
 
-interface ChargeVoltageAttr {
-  min: number;
-  max: number;
-  step: number;
-  default: number;
-}
-
 interface BatteryTypeAttr {
   chemistry: BatteryChemistry;
   displayName: string;
-  names: string[];
-  chargeVoltageAttr: ChargeVoltageAttr;
 }
 
 export const BATTERY_TYPE_ATTR: Record<BatteryType, BatteryTypeAttr> = {
   [BatteryType.LI_PO]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium Polymer",
-    names: ["lipo"],
-    chargeVoltageAttr: { min: 4150, max: 4250, step: 10, default: 4200 },
   },
   [BatteryType.LI_IO]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium Ion",
-    names: ["liio", "liLon"],
-    chargeVoltageAttr: { min: 4050, max: 4250, step: 10, default: 4100 },
   },
   [BatteryType.LI_FE]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium Fe",
-    names: ["life"],
-    chargeVoltageAttr: { min: 3580, max: 3700, step: 10, default: 3650 },
   },
   [BatteryType.LI_HV]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium HV",
-    names: ["lihv"],
-    chargeVoltageAttr: { min: 4250, max: 4500, step: 10, default: 4350 },
   },
   [BatteryType.NI_MH]: {
     chemistry: BatteryChemistry.NICKEL,
     displayName: "Nickel MH",
-    names: ["nimh"],
-    chargeVoltageAttr: { min: -3, max: -12, step: -1, default: -6 },
   },
   [BatteryType.NI_CD]: {
     chemistry: BatteryChemistry.NICKEL,
     displayName: "Nickel CD",
-    names: ["nicd"],
-    chargeVoltageAttr: { min: -3, max: -12, step: -1, default: -6 },
   },
   [BatteryType.PB]: {
     chemistry: BatteryChemistry.LEAD_ACID,
     displayName: "Lead Acid",
-    names: ["pb"],
-    chargeVoltageAttr: { min: 2300, max: 2750, step: 10, default: 2400 },
   },
   [BatteryType.PB_AGM]: {
     chemistry: BatteryChemistry.LEAD_ACID,
     displayName: "Lead AGM",
-    names: ["pb_agm"],
-    chargeVoltageAttr: { min: 2300, max: 2750, step: 10, default: 2400 },
   },
 };

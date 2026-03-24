@@ -29,7 +29,9 @@ function App() {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <CssBaseline />
-          <MainPage />
+          <StrictMode>
+            <MainPage />
+          </StrictMode>
         </PersistGate>
       </Provider>
     </ThemeProvider>

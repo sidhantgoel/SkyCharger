@@ -115,7 +115,7 @@ export function parseChannelWorkingInfo(
     capacity = (d[2] << 8) + d[3];
     duration = (d[4] << 8) + d[5];
     if (d[6] !== 0xff && d[7] !== 0xff) {
-      voltage = ((d[6] << 8) + d[7]) / 1000.0;
+      voltage = (d[6] << 8) + d[7];
     }
     if (d[8] !== 0xff && d[9] !== 0xff) {
       electricity = (d[8] << 8) + d[9];
@@ -133,11 +133,11 @@ export function parseChannelWorkingInfo(
   } else if (workingState === ChannelWorkingState.STATE_7) {
     if (d[2] == 0) {
       if (d.length > 12) {
-        setVoltage = ((d[3] << 8) + d[4]) / 1000.0;
-        setCurrent = ((d[5] << 8) + d[6]) / 1000.0;
-        realVoltage = ((d[7] << 8) + d[8]) / 1000.0;
-        realCurrent = ((d[9] << 8) + d[10]) / 1000.0;
-        realPower = ((d[11] << 8) + d[12]) / 1000.0;
+        setVoltage = (d[3] << 8) + d[4];
+        setCurrent = (d[5] << 8) + d[6];
+        realVoltage = (d[7] << 8) + d[8];
+        realCurrent = (d[9] << 8) + d[10];
+        realPower = (d[11] << 8) + d[12];
       }
     } else {
       dcErrorCode = d[2];
@@ -148,15 +148,15 @@ export function parseChannelWorkingInfo(
 
   //if(BATTERY_TYPE_ATTR[batteryType].chemistry == BatteryChemistry.LITHIUM) {
   if (true) {
-    cellVoltages[0] = ((d[14] << 8) + d[15]) / 1000.0;
-    cellVoltages[1] = ((d[16] << 8) + d[17]) / 1000.0;
-    cellVoltages[2] = ((d[18] << 8) + d[19]) / 1000.0;
-    cellVoltages[3] = ((d[20] << 8) + d[21]) / 1000.0;
-    cellVoltages[4] = ((d[22] << 8) + d[23]) / 1000.0;
-    cellVoltages[5] = ((d[24] << 8) + d[25]) / 1000.0;
+    cellVoltages[0] = (d[14] << 8) + d[15];
+    cellVoltages[1] = (d[16] << 8) + d[17];
+    cellVoltages[2] = (d[18] << 8) + d[19];
+    cellVoltages[3] = (d[20] << 8) + d[21];
+    cellVoltages[4] = (d[22] << 8) + d[23];
+    cellVoltages[5] = (d[24] << 8) + d[25];
     if (d.length > 29) {
-      cellVoltages[6] = ((d[26] << 8) + d[27]) / 1000.0;
-      cellVoltages[7] = ((d[28] << 8) + d[29]) / 1000.0;
+      cellVoltages[6] = (d[26] << 8) + d[27];
+      cellVoltages[7] = (d[28] << 8) + d[29];
     }
   }
 

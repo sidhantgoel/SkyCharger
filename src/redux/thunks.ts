@@ -13,6 +13,7 @@ import { resetAuthentication } from "./slices/authenticationSlice";
 
 export const updateBasicInfo =
   (
+    index: number,
     basicInfo: ChannelBasicInfo,
   ): ThunkAction<void, RootState, unknown, UnknownAction> =>
   async (
@@ -25,7 +26,11 @@ export const updateBasicInfo =
       throw new Error("Device type not found");
     }
     dispatch(
-      updateBasicInfoAction({ basicInfo: basicInfo, deviceType: deviceType }),
+      updateBasicInfoAction({
+        index: index,
+        basicInfo: basicInfo,
+        deviceType: deviceType,
+      }),
     );
   };
 

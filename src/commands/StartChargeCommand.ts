@@ -27,6 +27,10 @@ export class StartChargeCommand extends Command {
   ) {
     const commandBytes = new Uint8Array(16);
 
+    if (operationMode === OperationMode.STORAGE) {
+      voltageCharge = voltageDischarge;
+    }
+
     let chemistry = BATTERY_TYPE_ATTR[batteryType].chemistry;
     commandBytes[0] = channel;
     commandBytes[1] = batteryType;
@@ -49,10 +53,7 @@ export class StartChargeCommand extends Command {
     }
     commandBytes[12] = (trickleCurrent / 0x100) & 0xff;
     commandBytes[13] = (trickleCurrent % 0x100) & 0xff;
-    if (
-      deviceType === DeviceType.D200NEX ||
-      deviceType === DeviceType.D200NEXMETAL
-    ) {
+    if (deviceType === DeviceType.D200NEX) {
       commandBytes[14] = ((chargeCurrent / 100) >> 8) & 0xff;
       commandBytes[15] = ((dischargeCurrent / 100) >> 8) & 0xff;
     }
