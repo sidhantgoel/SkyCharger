@@ -42,6 +42,7 @@ interface ChargingOptionsState {
 interface ChannelState {
   basicInfo: ChannelBasicInfo | null;
   workingInfo: ChannelWorkingInfo | null;
+  workingInfoTimestamp: number;
   voltageInfo: VoltageInfo | null;
 }
 
@@ -84,6 +85,7 @@ const channelsSlice = createSlice({
           basicInfo: null,
           workingInfo: null,
           voltageInfo: null,
+          workingInfoTimestamp: null,
         }),
       );
       state.chargingOptions = action.payload.map(
@@ -169,6 +171,7 @@ const channelsSlice = createSlice({
       }
       const channelData = state.channelStates[index];
       channelData.workingInfo = workingInfo;
+      channelData.workingInfoTimestamp = Math.floor(new Date().getTime() / 1000);
     },
     updateVoltageInfo: (
       state,

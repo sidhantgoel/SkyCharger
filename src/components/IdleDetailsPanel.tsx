@@ -1,23 +1,19 @@
 import { Grid, Typography } from "@mui/material";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
-import {
-  ChannelWorkingState,
-  STATE_MESSAGES,
-} from "src/enums/ChannelWorkingStates";
-import { store } from "src/redux/store";
-import { lipoVoltsToPersentage } from "src/utils/BatteryUtils";
+import { BATTERY_TYPE_ATTR } from "src/enums/BatteryTypes";
+import { RootState } from "src/redux/store";
 import BatteryAnimation from "./BatteryAnimation";
 import ChargingPanel from "./ChargingPanel";
 
 interface ChannelDetailsPanelProps {
   index: number;
+  refresh: () => void;
 }
-
-type RootState = ReturnType<typeof store.getState>;
 
 export default function ChannelDetailsPanel({
   index,
+  refresh,
 }: ChannelDetailsPanelProps) {
   const basicInfo = useSelector(
     (state: RootState) => state.channels.channelStates[index].basicInfo,
@@ -28,16 +24,14 @@ export default function ChannelDetailsPanel({
   const voltageInfo = useSelector(
     (state: RootState) => state.channels.channelStates[index].voltageInfo,
   );
-  const voltages =
-    workingInfo?.workingState !== ChannelWorkingState.IDLE
-      ? workingInfo.cellVoltages.filter((voltage) => voltage >= 100)
-      : voltageInfo?.voltages;
-  const resistances =
-    workingInfo?.workingState !== ChannelWorkingState.IDLE
-      ? []
-      : voltageInfo?.resistances;
+  const voltages = voltageInfo?.voltages;
+  const resistances = voltageInfo?.resistances;
   const batteryPercentages =
-    voltages?.map((voltage) => lipoVoltsToPersentage(voltage / 1000.0)) ?? [];
+    voltages?.map((voltage) =>
+      BATTERY_TYPE_ATTR[basicInfo.batteryType].voltsToPersentage(
+        voltage / 1000.0,
+      ),
+    ) ?? [];
   const batteryCells = batteryPercentages.map((percentage) =>
     percentage > 0 ? Math.floor(percentage / 20) : 0,
   );
@@ -47,28 +41,72 @@ export default function ChannelDetailsPanel({
     const color = d3.interpolateRgb(fromColor, toColor)(percentage / 100);
     return color;
   });
+  const voltage = voltageInfo?.totalVoltage;
+  const resistance = voltageInfo?.totalResistance;
+  const batteryPercentage = BATTERY_TYPE_ATTR[
+    basicInfo.batteryType
+  ].voltsToPersentage(voltage / voltages?.length / 1000.0);
+  const batteryCell =
+    batteryPercentage > 0 ? Math.floor(batteryPercentage / 20) : 0;
+  const batteryColour = d3.interpolateRgb(
+    "rgb(255,0,0)",
+    "rgb(9,175,84)",
+  )(batteryPercentage / 100);
 
   return (
     <Grid container direction="row" spacing={2}>
-      <Grid size={6}>
-        {basicInfo &&
-          workingInfo &&
-          (voltageInfo ||
-            workingInfo.workingState !== ChannelWorkingState.IDLE) && (
-            <Grid container direction={"row"} padding={2} spacing={1}>
-              <Grid
-                container
-                direction={"row"}
-                spacing={2}
-                size={12}
-                alignItems={"center"}
-                justifyContent={"center"}
-              >
-                <Typography variant="h5">
-                  {STATE_MESSAGES[basicInfo.workingState]}
-                </Typography>
+      <Grid container direction={"column"} size={6}>
+        {basicInfo && workingInfo && voltageInfo && (
+          <Grid container direction={"row"} padding={2} spacing={1}>
+            {voltage > 0 && (
+              <Grid container direction={"row"} spacing={2} size={12}>
+                <Grid
+                  container
+                  size={3}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  <BatteryAnimation
+                    height={40}
+                    width={76}
+                    charging={false}
+                    startFromBar={batteryCell}
+                    barColor={batteryColour}
+                  />
+                </Grid>
+                <Grid
+                  container
+                  size={3}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  <Typography variant="h5">
+                    {Number(batteryPercentage).toFixed(2)}%
+                  </Typography>
+                </Grid>
+                <Grid
+                  container
+                  size={3}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  <Typography variant="h5">
+                    {Number(voltage / 1000).toFixed(3)} V
+                  </Typography>
+                </Grid>
+                <Grid
+                  container
+                  size={3}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                >
+                  <Typography variant="h5">{resistance} mΩ</Typography>
+                </Grid>
               </Grid>
-              {batteryCells.map((cell, index) => (
+            )}
+            {voltages &&
+              voltages.length > 1 &&
+              batteryCells.map((cell, index) => (
                 <Grid
                   container
                   direction={"row"}
@@ -83,11 +121,9 @@ export default function ChannelDetailsPanel({
                     justifyContent={"center"}
                   >
                     <BatteryAnimation
-                      height={50}
-                      width={100}
-                      charging={
-                        basicInfo.workingState === ChannelWorkingState.WORKING
-                      }
+                      height={36}
+                      width={64}
+                      charging={false}
                       startFromBar={cell}
                       barColor={batteryColours[index]}
                     />
@@ -128,11 +164,11 @@ export default function ChannelDetailsPanel({
                   </Grid>
                 </Grid>
               ))}
-            </Grid>
-          )}
+          </Grid>
+        )}
       </Grid>
       <Grid size={6}>
-        <ChargingPanel index={index} />
+        <ChargingPanel index={index} refresh={refresh} />
       </Grid>
     </Grid>
   );

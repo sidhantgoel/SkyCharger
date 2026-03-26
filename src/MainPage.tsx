@@ -1,71 +1,60 @@
+import BluetoothIcon from "@mui/icons-material/Bluetooth";
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
 import {
-  Paper,
   Button,
   FormControl,
+  Grid,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   SelectChangeEvent,
-  Grid,
   Tabs,
-  AppBar,
-  Toolbar,
-  Typography,
+  Typography
 } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import { IpcRendererEvent } from "electron/renderer";
 import React, { useEffect } from "react";
-import ChannelTabPanel from "src/components/ChannelTabPanel";
-import { CHANNEL_LABELS, ChargingChannel } from "src/enums/ChargingChannels";
-import { parseMachineInfo } from "src/responses/MachineInfo";
-import { CommandEnum } from "src/enums/Commands";
-import { parseBasicInfo } from "src/responses/ChannelBasicInfo";
-import BluetoothIcon from "@mui/icons-material/Bluetooth";
-import LoginIcon from "@mui/icons-material/Login";
-import LogoutIcon from "@mui/icons-material/Logout";
-import PasswordDialog from "src/components/PasswordDialog";
-import FirmwareUpdatePage from "src/components/FirmwareUpdatePage";
-import { BluetoothHelper } from "src/utils/BluetoothHelper";
-import { Command as CommandClass } from "src/commands/Command";
+import { useDispatch, useSelector } from "react-redux";
 import { MachineInfoCommand } from "src/commands/MachineInfoCommand";
 import { QueryBasicInfoCommand } from "src/commands/QueryBasicInfoCommand";
-import { QueryChannelStatusCommand } from "src/commands/QueryChannelStatusCommand";
-import { useDispatch, useSelector } from "react-redux";
-import { store, type AppDispatch, type RootState } from "./redux/store";
+import ChannelTabPanel from "src/components/ChannelTabPanel";
+import FirmwareUpdatePage from "src/components/FirmwareUpdatePage";
+import PasswordDialog from "src/components/PasswordDialog";
+import { CHANNEL_LABELS, ChargingChannel } from "src/enums/ChargingChannels";
+import { CommandEnum } from "src/enums/Commands";
+import { parseBasicInfo } from "src/responses/ChannelBasicInfo";
+import { parseMachineInfo } from "src/responses/MachineInfo";
+import { BluetoothHelper } from "src/utils/BluetoothHelper";
+import { DEVICE_ATTR } from "./enums/DeviceTypes";
 import {
-  selectDevice,
-  updateConnecting,
-  updateConnected,
-  updateDisconnected,
-} from "./redux/slices/connectionSlice";
+  updateMachineInfo,
+  updateSelectedTab
+} from "./redux/slices/appSlice";
 import {
-  setPassword,
-  openPasswordDialog,
   closePasswordDialog,
+  openPasswordDialog,
+  setPassword,
   setPasswordOk,
 } from "./redux/slices/authenticationSlice";
 import {
-  resetDevices,
-  updateScanning,
-  updateDevices,
-  stopScanning,
-} from "./redux/slices/scanSlice";
-import { bluetoothHelper } from "./utils/BluetoothHelper";
-import {
-  updateWorkingInfo,
-  resetChannels,
-  createChannels,
+  createChannels
 } from "./redux/slices/channelsSlice";
-import { parseChannelWorkingInfo } from "src/responses/ChannelWorkingInfo";
 import {
-  updateSelectedTab,
-  updateMachineInfo,
-  resetSelectedTab,
-  resetMachineInfo,
-} from "./redux/slices/appSlice";
-import { DEVICE_ATTR } from "./enums/DeviceTypes";
-import { disconnectDevice, updateBasicInfo } from "./redux/thunks";
-import BatteryAnimation from "./components/BatteryAnimation";
+  selectDevice,
+  updateConnected,
+  updateConnecting,
+  updateDisconnected,
+} from "./redux/slices/connectionSlice";
+import {
+  stopScanning,
+  updateDevices,
+  updateScanning
+} from "./redux/slices/scanSlice";
+import { type AppDispatch, type RootState } from "./redux/store";
+import { disconnectDevice } from "./redux/thunks";
+import { bluetoothHelper } from "./utils/BluetoothHelper";
 
 declare const window: Window & {
   electronAPI: {
@@ -125,7 +114,7 @@ const MainPage = () => {
     );
   };
 
-  const notify = (command: CommandEnum, data: Uint8Array) => {
+  const notify = (command: CommandEnum, data: Uint8Array): void => {
     if (timeout) {
       clearTimeout(timeout);
     }

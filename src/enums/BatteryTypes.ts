@@ -1,4 +1,8 @@
-import { OperationMode } from "./OperationModes";
+import {
+  lifeVoltsToPersentage,
+  liioVoltsToPersentage,
+  lipoVoltsToPersentage,
+} from "src/utils/BatteryUtils";
 
 export enum BatteryChemistry {
   LITHIUM,
@@ -60,39 +64,48 @@ export const BATTERY_CHEMISTRY_ATTR: Record<
 interface BatteryTypeAttr {
   chemistry: BatteryChemistry;
   displayName: string;
+  voltsToPersentage: ((volts: number) => number) | null;
 }
 
 export const BATTERY_TYPE_ATTR: Record<BatteryType, BatteryTypeAttr> = {
   [BatteryType.LI_PO]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium Polymer",
+    voltsToPersentage: lipoVoltsToPersentage,
   },
   [BatteryType.LI_IO]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium Ion",
+    voltsToPersentage: liioVoltsToPersentage,
   },
   [BatteryType.LI_FE]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium Fe",
+    voltsToPersentage: lifeVoltsToPersentage,
   },
   [BatteryType.LI_HV]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium HV",
+    voltsToPersentage: null,
   },
   [BatteryType.NI_MH]: {
     chemistry: BatteryChemistry.NICKEL,
     displayName: "Nickel MH",
+    voltsToPersentage: null,
   },
   [BatteryType.NI_CD]: {
     chemistry: BatteryChemistry.NICKEL,
     displayName: "Nickel CD",
+    voltsToPersentage: null,
   },
   [BatteryType.PB]: {
     chemistry: BatteryChemistry.LEAD_ACID,
     displayName: "Lead Acid",
+    voltsToPersentage: null,
   },
   [BatteryType.PB_AGM]: {
     chemistry: BatteryChemistry.LEAD_ACID,
     displayName: "Lead AGM",
+    voltsToPersentage: null,
   },
 };

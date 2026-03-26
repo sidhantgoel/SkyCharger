@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 export type BatteryAnimationProps = React.SVGProps<SVGSVGElement> & {
   /** When false, bars stay solid with no pulse. Default: true. */
   charging?: boolean;
+  animateSingleBar?: boolean;
   /**
    * 0-based index of the first bar that animates. Bars with index &lt; `startFromBar`
    * stay fully filled (no animation). Default: 0 (all bars animate from empty).
@@ -39,17 +40,24 @@ const DEFAULT_BAR_APPEAR_INTERVAL_S = 1;
 
 const BatteryAnimation = ({
   charging = true,
+  animateSingleBar = false,
   startFromBar = 0,
   barAppearIntervalS = DEFAULT_BAR_APPEAR_INTERVAL_S,
   barColor = DEFAULT_BAR_COLOR,
   className,
+  height,
+  width,
   ...props
 }: BatteryAnimationProps) => {
   const staticBars = CHARGE_BAR_PATHS.slice(0, startFromBar);
-  const animatedBars = charging ? CHARGE_BAR_PATHS.slice(startFromBar) : [];
+  const animatedBars = charging
+    ? animateSingleBar
+      ? CHARGE_BAR_PATHS.slice(startFromBar, startFromBar + 1)
+      : CHARGE_BAR_PATHS.slice(startFromBar)
+    : [];
 
   return (
-    <motion.svg viewBox={VIEWBOX_STR} width={VIEWBOX_W} height={VIEWBOX_H}>
+    <motion.svg viewBox={VIEWBOX_STR} width={width} height={height}>
       <motion.path
         transform="translate(0,0)"
         style={{ fill: "rgb(237,237,237)" }}

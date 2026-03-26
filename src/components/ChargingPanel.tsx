@@ -4,15 +4,15 @@ import {
   FormControl,
   Grid,
   InputLabel,
-  ListItemText,
   MenuItem,
-  Select,
+  Select
 } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { StartChargeCommand } from "src/commands/StartChargeCommand";
-import { StopChargeCommand } from "src/commands/StopChargeCommand";
 import { BATTERY_TYPE_ATTR, BatteryType } from "src/enums/BatteryTypes";
 import { ChannelWorkingState } from "src/enums/ChannelWorkingStates";
+import { CommandEnum } from "src/enums/Commands";
 import {
   CHARGE_PARAMETER_ATTRS,
   ChargeParameterEnum,
@@ -25,16 +25,16 @@ import {
   updateChargeParameter,
   updateOperationMode,
 } from "src/redux/slices/channelsSlice";
-import { store } from "src/redux/store";
+import { RootState } from "src/redux/store";
+import { parseStartChargeResponse } from "src/responses/StartChargeResponse";
 import { bluetoothHelper } from "src/utils/BluetoothHelper";
 
 interface ChargingPanelProps {
   index: number;
+  refresh: () => void;
 }
 
-type RootState = ReturnType<typeof store.getState>;
-
-export default function ChargingPanel({ index }: ChargingPanelProps) {
+export default function ChargingPanel({ index, refresh }: ChargingPanelProps) {
   const channel = useSelector(
     (state: RootState) => state.channels.channels[index],
   );
@@ -48,9 +48,11 @@ export default function ChargingPanel({ index }: ChargingPanelProps) {
   const deviceType = useSelector(
     (state: RootState) => state.app.machineInfo?.deviceType,
   );
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   const dispatch = useDispatch();
 
   const startCharge = () => {
+    setButtonDisabled(true);
     const command = new StartChargeCommand(
       channel,
       deviceType,
@@ -68,10 +70,22 @@ export default function ChargingPanel({ index }: ChargingPanelProps) {
     );
     bluetoothHelper.sendCommand(command);
   };
-  const stopCharge = () => {
-    const command = new StopChargeCommand(channel);
-    bluetoothHelper.sendCommand(command);
+  const notify = (command: CommandEnum, data: Uint8Array): void => {
+    if (command === CommandEnum.START_CHARGE) {
+      const response = parseStartChargeResponse(data);
+      if (response) {
+        if (response.success) {
+          refresh();
+        }
+      }
+    }
   };
+  useEffect(() => {
+    bluetoothHelper.addOnNotifyListener(notify);
+    return () => {
+      bluetoothHelper.removeOnNotifyListener(notify);
+    };
+  }, []);
   return (
     <>
       {chargingOptions && (
@@ -83,7 +97,7 @@ export default function ChargingPanel({ index }: ChargingPanelProps) {
             spacing={2}
             paddingRight={2}
           >
-            <Grid container direction="row" spacing={2} paddingTop={6}>
+            <Grid container direction="row" spacing={2} paddingTop={2}>
               <Grid size={4}>
                 <FormControl
                   fullWidth
@@ -239,34 +253,19 @@ export default function ChargingPanel({ index }: ChargingPanelProps) {
                   ),
               )}
             </Grid>
-            <Grid container direction="row" spacing={2}>
-              <Grid size={4}></Grid>
-              <Grid size={4}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  onClick={startCharge}
-                  disabled={workingState === ChannelWorkingState.WORKING}
-                >
-                  Start Charge
-                </Button>
-              </Grid>
-              <Grid size={4}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  onClick={stopCharge}
-                  disabled={workingState !== ChannelWorkingState.WORKING}
-                >
-                  Stop Charge
-                </Button>
-              </Grid>
-            </Grid>
           </Grid>
         </Grid>
       )}
+      <Button
+        disabled={buttonDisabled}
+        loading={buttonDisabled}
+        variant="contained"
+        color="primary"
+        style={{ position: "absolute", bottom: 80, right: 20 }}
+        onClick={startCharge}
+      >
+        Charge
+      </Button>
     </>
   );
 }

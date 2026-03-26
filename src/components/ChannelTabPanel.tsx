@@ -55,7 +55,7 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
     };
   }, []);
 
-  const notify = (command: CommandEnum, data: Uint8Array) => {
+  const notify = (command: CommandEnum, data: Uint8Array): void => {
     switch (command) {
       case CommandEnum.QUERY_BASIC_INFO:
         const basicInfo = parseBasicInfo(data);
@@ -74,7 +74,7 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
             }),
           );
           if (workingStateRef.current !== ChannelWorkingState.IDLE) {
-            return;
+            break;
           }
           getVoltageInfo();
         }
@@ -95,6 +95,10 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
     }
   };
 
+  const refresh = () => {
+    getBasicInfo();
+  };
+
   const getBasicInfo = async () => {
     await bluetoothHelper.sendCommand(
       new QueryBasicInfoCommand(channel, password),
@@ -110,39 +114,13 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
   };
 
   if (workingState === ChannelWorkingState.IDLE) {
-    return <IdleDetailsPanel index={index} />;
+    return <IdleDetailsPanel index={index} refresh={refresh} />;
   } else if (workingState === ChannelWorkingState.WORKING) {
-    return <WorkingDetailsPanel index={index} />;
+    return <WorkingDetailsPanel index={index} refresh={refresh} />;
   } else if (workingState === ChannelWorkingState.DONE) {
-    return <FinishedDetailsPanel index={index} />;
+    return <FinishedDetailsPanel index={index} refresh={refresh} />;
   } else if (workingState === ChannelWorkingState.ERROR) {
-    return <ErrorDetailsPanel index={index} />;
+    return <ErrorDetailsPanel index={index} refresh={refresh} />;
   }
   return <></>;
-
-  // return (
-  //   <>
-  //     <Grid container direction="row" spacing={2}>
-  //       <Grid size={6}>
-  //         {(() => {
-  //           switch (workingState) {
-  //             case ChannelWorkingState.IDLE:
-  //               return <IdleDetailsPanel index={index} />;
-  //             case ChannelWorkingState.WORKING:
-  //               return <WorkingDetailsPanel index={index} />;
-  //             case ChannelWorkingState.DONE:
-  //               return <FinishedDetailsPanel index={index} />;
-  //             case ChannelWorkingState.ERROR:
-  //               return <ErrorDetailsPanel index={index} />;
-  //             default:
-  //               return <></>;
-  //           }
-  //         })()}
-  //       </Grid>
-  //       <Grid size={6}>
-  //         <ChargingPanel index={index} />
-  //       </Grid>
-  //     </Grid>
-  //   </>
-  // );
 }

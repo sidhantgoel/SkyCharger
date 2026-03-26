@@ -9,16 +9,14 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { FirmwareUpdator } from "src/utils/FirmwareUpdator";
-import { bluetoothHelper } from "src/utils/BluetoothHelper";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { CommandEnum } from "src/enums/Commands";
-import { CheckBootVersionCommand } from "src/commands/CheckBootVersionCommand";
-import { CheckNewVersionCommand } from "src/commands/CheckNewVersionCommand";
+import { RootState } from "src/redux/store";
 import { parseBootVersion } from "src/responses/CheckBootVersionResponse";
 import { parseCheckNewVersion } from "src/responses/CheckNewVersionResponse";
-import { RootState } from "src/redux/store";
-import { useSelector } from "react-redux";
+import { bluetoothHelper } from "src/utils/BluetoothHelper";
+import { FirmwareUpdator } from "src/utils/FirmwareUpdator";
 
 function UpdateDialog({
   open,
@@ -100,7 +98,7 @@ export default function FirmwareUpdatePage() {
   const [downloadUrl, setDownloadUrl] = useState<string>("");
   const [checksum, setChecksum] = useState<number>(0);
 
-  const notify = (command: CommandEnum, data: Uint8Array) => {
+  const notify = (command: CommandEnum, data: Uint8Array): void => {
     if (command === CommandEnum.CHECK_BOOT_VERSION) {
       const bootVersion = parseBootVersion(data);
       console.log(`Boot version: ${bootVersion?.bootVersion}`);
@@ -189,13 +187,6 @@ export default function FirmwareUpdatePage() {
           alignItems={"center"}
           justifyContent={"center"}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={startFirmwareUpdate}
-          >
-            Start Firmware Update
-          </Button>
         </Grid>
       </Grid>
       <UpdateDialog
@@ -205,6 +196,16 @@ export default function FirmwareUpdatePage() {
         progress={progress}
         updating={updating}
       />
+      <Button
+        disabled={updating}
+        loading={updating}
+        variant="contained"
+        color="primary"
+        style={{ position: "absolute", bottom: 80, right: 20 }}
+        onClick={startFirmwareUpdate}
+      >
+        Update
+      </Button>
     </React.Fragment>
   );
 }

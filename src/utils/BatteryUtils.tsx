@@ -25,3 +25,31 @@ export function lipoVoltsToPersentage(volts: number): number {
   if (volts >= 3.27) return 0.0 + (5.0 * (volts - 3.27)) / (3.61 - 3.27);
   return -1.0;
 }
+
+export function lifeVoltsToPersentage(volts: number): number {
+  if (volts >= 3.65) return 100.0;
+  if (volts >= 3.4) return 90.0 + (10.0 * (volts - 3.4)) / (3.65 - 3.4);
+  if (volts >= 3.35) return 80.0 + (10.0 * (volts - 3.35)) / (3.4 - 3.35);
+  if (volts >= 3.32) return 70.0 + (10.0 * (volts - 3.35)) / (3.35 - 3.32);
+  if (volts >= 3.29) return 60.0 + (10.0 * (volts - 3.29)) / (3.32 - 3.29);
+  if (volts >= 3.27) return 50.0 + (10.0 * (volts - 3.27)) / (3.29 - 3.27);
+  if (volts >= 3.25) return 40.0 + (10.0 * (volts - 3.25)) / (3.27 - 3.25);
+  if (volts >= 3.22) return 30.0 + (10.0 * (volts - 3.22)) / (3.25 - 3.22);
+  if (volts >= 3.2) return 20.0 + (10.0 * (volts - 3.2)) / (3.22 - 3.2);
+  if (volts >= 3.0) return 10.0 + (10.0 * (volts - 3.0)) / (3.2 - 3.0);
+  if (volts >= 2.5) return 0.0 + (10.0 * (volts - 2.5)) / (3.0 - 2.5);
+}
+
+export function liioVoltsToPersentage(volts: number): number {
+  if (volts >= 3.4) return 100.0;
+  if (volts >= 3.35) return 90.0 + (10.0 * (volts - 3.35)) / (3.4 - 3.35);
+  if (volts >= 3.32) return 80.0 + (10.0 * (volts - 3.32)) / (3.35 - 3.32);
+  if (volts >= 3.3) return 70.0 + (10.0 * (volts - 3.3)) / (3.32 - 3.3);
+  if (volts >= 3.27) return 60.0 + (10.0 * (volts - 3.27)) / (3.3 - 3.27);
+  if (volts >= 3.26) return 50.0 + (10.0 * (volts - 3.26)) / (3.27 - 3.26);
+  if (volts >= 3.25) return 40.0 + (10.0 * (volts - 3.25)) / (3.27 - 3.25);
+  if (volts >= 3.22) return 30.0 + (10.0 * (volts - 3.22)) / (3.25 - 3.22);
+  if (volts >= 3.2) return 20.0 + (10.0 * (volts - 3.2)) / (3.22 - 3.2);
+  if (volts >= 3.0) return 10.0 + (10.0 * (volts - 3.0)) / (3.2 - 3.0);
+  if (volts >= 2.5) return 0.0 + (10.0 * (volts - 2.5)) / (3.0 - 2.5);
+}

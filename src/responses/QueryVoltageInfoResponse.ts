@@ -1,4 +1,3 @@
-import { Buffer } from "buffer";
 import { ChargingChannel } from "src/enums/ChargingChannels";
 
 export interface VoltageInfo {
@@ -22,7 +21,6 @@ function createVoltageInfo(
 export function parseVoltageInfo(
   data: Uint8Array | number[],
 ): VoltageInfo | null {
-  console.log("VoltageInfoResponse: " + Buffer.from(data).toString("hex"));
   const d = data instanceof Uint8Array ? data : new Uint8Array(data);
   if (d.length < 2) return null;
   const channel = d[0];

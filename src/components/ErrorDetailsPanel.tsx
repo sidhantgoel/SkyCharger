@@ -1,22 +1,25 @@
-import { Grid, Typography } from "@mui/material";
-import * as d3 from "d3";
+import { Alert, AlertTitle, Button, Grid } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  ChannelWorkingState,
-  STATE_MESSAGES,
-} from "src/enums/ChannelWorkingStates";
-import { store } from "src/redux/store";
-import { lipoVoltsToPersentage } from "src/utils/BatteryUtils";
-import BatteryAnimation from "./BatteryAnimation";
-import ChargingPanel from "./ChargingPanel";
+import { StopChargeCommand } from "src/commands/StopChargeCommand";
+import { ChannelWorkingState } from "src/enums/ChannelWorkingStates";
+import { CommandEnum } from "src/enums/Commands";
+import { ERROR_MESSAGES, ErrorCode } from "src/enums/ErrorCodes";
+import { RootState } from "src/redux/store";
+import { bluetoothHelper } from "src/utils/BluetoothHelper";
 
 interface ChannelDetailsPanelProps {
   index: number;
+  refresh: () => void;
 }
 
-type RootState = ReturnType<typeof store.getState>;
-
-export default function ErrorDetailsPanel({ index }: ChannelDetailsPanelProps) {
+export default function ErrorDetailsPanel({
+  index,
+  refresh,
+}: ChannelDetailsPanelProps) {
+  const channel = useSelector(
+    (state: RootState) => state.channels.channels[index],
+  );
   const basicInfo = useSelector(
     (state: RootState) => state.channels.channelStates[index].basicInfo,
   );
@@ -26,114 +29,96 @@ export default function ErrorDetailsPanel({ index }: ChannelDetailsPanelProps) {
   const voltageInfo = useSelector(
     (state: RootState) => state.channels.channelStates[index].voltageInfo,
   );
-  const voltages =
-    workingInfo?.workingState !== ChannelWorkingState.IDLE
-      ? workingInfo.cellVoltages.filter((voltage) => voltage >= 100)
-      : voltageInfo?.voltages;
-  const resistances =
-    workingInfo?.workingState !== ChannelWorkingState.IDLE
-      ? []
-      : voltageInfo?.resistances;
-  const batteryPercentages =
-    voltages?.map((voltage) => lipoVoltsToPersentage(voltage / 1000.0)) ?? [];
-  const batteryCells = batteryPercentages.map((percentage) =>
-    percentage > 0 ? Math.floor(percentage / 20) : 0,
-  );
-  const batteryColours = batteryPercentages.map((percentage) => {
-    const toColor = "rgb(9,175,84)";
-    const fromColor = "rgb(255,0,0)";
-    const color = d3.interpolateRgb(fromColor, toColor)(percentage / 100);
-    return color;
-  });
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
+  const notify = (command: CommandEnum, data: Uint8Array): void => {
+    switch (command) {
+      case CommandEnum.STOP_CHARGE:
+        refresh();
+        break;
+      default:
+        break;
+    }
+  };
+
+  useEffect(() => {
+    bluetoothHelper.addOnNotifyListener(notify);
+    return () => {
+      bluetoothHelper.removeOnNotifyListener(notify);
+    };
+  }, []);
+
+  const finishChannel = () => {
+    setButtonDisabled(true);
+    const command = new StopChargeCommand(channel);
+    bluetoothHelper.sendCommand(command);
+  };
 
   return (
-    <Grid container direction="row" spacing={2}>
-      <Grid size={6}>
+    <Grid container direction="row" spacing={2} size={12}>
+      <Grid container size={12}>
         {basicInfo &&
           workingInfo &&
           (voltageInfo ||
             workingInfo.workingState !== ChannelWorkingState.IDLE) && (
-            <Grid container direction={"row"} padding={2} spacing={1}>
-              <Grid container direction={"row"} spacing={2} size={12}>
-                <Grid
-                  container
-                  direction={"row"}
-                  spacing={2}
-                  size={4}
-                  alignItems={"center"}
-                  justifyContent={"center"}
-                >
-                  <Typography variant="h5">
-                    {STATE_MESSAGES[basicInfo.workingState]}
-                  </Typography>
-                </Grid>
-              </Grid>
-              {batteryCells.map((cell, index) => (
-                <Grid
-                  container
-                  direction={"row"}
-                  spacing={2}
-                  size={12}
-                  key={index}
-                >
-                  <Grid
-                    container
-                    size={3}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                  >
-                    <BatteryAnimation
-                      height={50}
-                      width={100}
-                      charging={
-                        basicInfo.workingState === ChannelWorkingState.WORKING
-                      }
-                      startFromBar={cell}
-                      barColor={batteryColours[index]}
-                    />
-                  </Grid>
+            <Grid container direction={"row"} padding={2} spacing={1} size={12}>
+              <Grid container direction={"column"} spacing={2} size={12}>
+                {workingInfo.systemErrorCode !== ErrorCode.NONE && (
                   <Grid
                     container
                     direction={"row"}
                     spacing={2}
-                    size={3}
-                    alignItems={"center"}
+                    alignItems={"stretch"}
                     justifyContent={"center"}
                   >
-                    <Typography variant="h5">
-                      {Number(batteryPercentages[index]).toFixed(2)}%
-                    </Typography>
+                    <Alert variant="filled" severity="error">
+                      <AlertTitle>System Error</AlertTitle>
+                      {ERROR_MESSAGES[workingInfo.systemErrorCode]}
+                    </Alert>
                   </Grid>
+                )}
+                {workingInfo.chargeErrorCode !== ErrorCode.NONE && (
                   <Grid
                     container
-                    size={3}
-                    alignItems={"center"}
+                    direction={"row"}
+                    spacing={2}
+                    alignItems={"stretch"}
                     justifyContent={"center"}
                   >
-                    <Typography variant="h5">
-                      {Number(voltages[index] / 1000).toFixed(3)} V
-                    </Typography>
+                    <Alert variant="filled" severity="error">
+                      <AlertTitle>Charge Error</AlertTitle>
+                      {ERROR_MESSAGES[workingInfo.chargeErrorCode]}
+                    </Alert>
                   </Grid>
+                )}
+                {workingInfo.dcErrorCode !== ErrorCode.NONE && (
                   <Grid
                     container
-                    size={3}
-                    alignItems={"center"}
+                    direction={"row"}
+                    spacing={2}
+                    alignItems={"stretch"}
                     justifyContent={"center"}
                   >
-                    {resistances && resistances.length > index && (
-                      <Typography variant="h5">
-                        {resistances[index]} mΩ
-                      </Typography>
-                    )}
+                    <Alert variant="filled" severity="error">
+                      <AlertTitle>DC Error</AlertTitle>
+                      {ERROR_MESSAGES[workingInfo.dcErrorCode]}
+                    </Alert>
                   </Grid>
-                </Grid>
-              ))}
+                )}
+              </Grid>
             </Grid>
           )}
       </Grid>
-      <Grid size={6}>
-        <ChargingPanel index={index} />
-      </Grid>
+      <Button
+        disabled={buttonDisabled}
+        loading={buttonDisabled}
+        variant="contained"
+        color="error"
+        style={{ position: "absolute", bottom: 80, right: 20 }}
+        onClick={finishChannel}
+      >
+        Reset
+      </Button>
     </Grid>
   );
 }
