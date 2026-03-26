@@ -14,9 +14,7 @@ import { MakerMSIX } from "@electron-forge/maker-msix";
 import { MakerWix } from "@electron-forge/maker-wix";
 import { MakerAppX } from "@electron-forge/maker-appx";
 import { MakerDMG } from "@electron-forge/maker-dmg";
-import { MakerFlatpak } from "@electron-forge/maker-flatpak";
 import { MakerPKG } from "@electron-forge/maker-pkg";
-import { MakerSnap } from "@electron-forge/maker-snap";
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -33,9 +31,7 @@ const config: ForgeConfig = {
     new MakerWix({ icon: "./images/icon.ico" }),
     new MakerAppX({}),
     new MakerDMG({ icon: "./images/icon.icns" }),
-    new MakerFlatpak({}),
     new MakerPKG({}),
-    new MakerSnap({}),
   ],
   plugins: [
     new AutoUnpackNativesPlugin({}),
