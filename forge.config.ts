@@ -15,6 +15,7 @@ import { MakerWix } from "@electron-forge/maker-wix";
 import { MakerAppX } from "@electron-forge/maker-appx";
 import { MakerDMG } from "@electron-forge/maker-dmg";
 import { MakerPKG } from "@electron-forge/maker-pkg";
+import { PublisherGithub } from "@electron-forge/publisher-github";
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -62,6 +63,14 @@ const config: ForgeConfig = {
       [FuseV1Options.EnableNodeCliInspectArguments]: false,
       [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
+    }),
+  ],
+  publishers: [
+    new PublisherGithub({
+      repository: {
+        owner: "sidhantgoel",
+        name: "skycharger",
+      },
     }),
   ],
 };
