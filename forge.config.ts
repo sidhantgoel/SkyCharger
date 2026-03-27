@@ -30,7 +30,9 @@ const config: ForgeConfig = {
     new MakerRpm({}),
     new MakerDeb({ options: { icon: "./images/icon.png" } }),
     new MakerMSIX({}),
-    new MakerWix({ icon: "./images/icon.ico" }),
+    new MakerWix({ icon: "./images/icon.ico", ui: {
+      chooseDirectory: true,
+    }}),
     new MakerAppX({}),
     new MakerDMG({ icon: "./images/icon.icns" }),
     new MakerPKG({}),
