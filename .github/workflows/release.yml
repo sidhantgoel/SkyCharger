@@ -1,6 +1,8 @@
 # .github/workflows/release.yml
 name: Release app
 on: push
+permissions:
+  contents: write
 jobs:
   build:
     strategy:
