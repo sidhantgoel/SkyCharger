@@ -263,6 +263,13 @@ export default function WorkingPanel({ index, refresh }: WorkingPanelProps) {
               Current: {Number(workingInfo.electricity / 1000).toFixed(3)} A
             </Typography>
             <Typography variant="h5">
+              Power:{" "}
+              {Number(
+                (workingInfo.voltage / 1000) * (workingInfo.electricity / 1000),
+              ).toFixed(1)}{" "}
+              W
+            </Typography>
+            <Typography variant="h5">
               Capacity: {workingInfo.capacity} mAh
             </Typography>
             <Typography variant="h5">
@@ -279,7 +286,7 @@ export default function WorkingPanel({ index, refresh }: WorkingPanelProps) {
         loading={buttonDisabled}
         variant="contained"
         color="error"
-        style={{ position: "absolute", bottom: 80, right: 20 }}
+        style={{ position: "absolute", bottom: 60, right: 20 }}
         onClick={stopCharge}
       >
         Stop

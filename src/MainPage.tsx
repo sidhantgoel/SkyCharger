@@ -196,9 +196,7 @@ const MainPage = () => {
   }
 
   const extraTabs = connected
-    ? [
-        { label: "Firmware Update", index: channels.length },
-      ]
+    ? [{ label: "Firmware Update", index: channels.length }]
     : [];
   const extraTabPanels = connected
     ? [

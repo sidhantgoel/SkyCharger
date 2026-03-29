@@ -206,7 +206,7 @@ export default function FirmwareUpdatePanel() {
         loading={updating}
         variant="contained"
         color="primary"
-        style={{ position: "absolute", bottom: 80, right: 20 }}
+        style={{ position: "absolute", bottom: 60, right: 20 }}
         onClick={startFirmwareUpdate}
       >
         Update

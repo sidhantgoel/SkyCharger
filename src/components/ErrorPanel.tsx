@@ -111,7 +111,7 @@ export default function ErrorPanel({ index, refresh }: ErrorPanelProps) {
         loading={buttonDisabled}
         variant="contained"
         color="error"
-        style={{ position: "absolute", bottom: 80, right: 20 }}
+        style={{ position: "absolute", bottom: 60, right: 20 }}
         onClick={finishChannel}
       >
         Reset

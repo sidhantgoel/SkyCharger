@@ -236,7 +236,7 @@ export default function FinishedPanel({ index, refresh }: FinishedPanelProps) {
         loading={buttonDisabled}
         variant="contained"
         color="success"
-        style={{ position: "absolute", bottom: 80, right: 20 }}
+        style={{ position: "absolute", bottom: 60, right: 20 }}
         onClick={stopCharge}
       >
         Done

@@ -178,7 +178,9 @@ export default function ChannelSettingDialog({
       setRecycleValue(0);
     }
     setRecycleEnable(recycleEnable);
-    bluetoothHelper.sendCommand(new SetRecycleCommand(channel, recycleEnable ? DEFAULT_RECYCLE : 0));
+    bluetoothHelper.sendCommand(
+      new SetRecycleCommand(channel, recycleEnable ? DEFAULT_RECYCLE : 0),
+    );
   };
 
   const onTimeChange = (time: number) => {
@@ -186,7 +188,7 @@ export default function ChannelSettingDialog({
   };
 
   const onRecycleChange = (recycle: number) => {
-    if(recycle === 0) {
+    if (recycle === 0) {
       setRecycleEnable(false);
     } else {
       setRecycleEnable(true);
@@ -372,7 +374,9 @@ export default function ChannelSettingDialog({
                     control={
                       <Switch
                         checked={recycleEnable}
-                        onChange={(e) => onRecycleEnableChange(e.target.checked)}
+                        onChange={(e) =>
+                          onRecycleEnableChange(e.target.checked)
+                        }
                       />
                     }
                     label="Recycle Enable"
