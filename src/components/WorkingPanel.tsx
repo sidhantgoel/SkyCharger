@@ -278,6 +278,9 @@ export default function WorkingPanel({ index, refresh }: WorkingPanelProps) {
                 .toString()
                 .padStart(2, "0")}
             </Typography>
+            <Typography variant="h5">
+              Temperature: {workingInfo.internalTemperature} °C
+            </Typography>
           </Box>
         </Grid>
       </Grid>
