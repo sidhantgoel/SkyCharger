@@ -16,17 +16,14 @@ import { store } from "src/redux/store";
 import { bluetoothHelper } from "src/utils/BluetoothHelper";
 import BatteryAnimation from "./BatteryAnimation";
 
-interface ChannelDetailsPanelProps {
+interface WorkingPanelProps {
   index: number;
   refresh: () => void;
 }
 
 type RootState = ReturnType<typeof store.getState>;
 
-export default function WorkingDetailsPanel({
-  index,
-  refresh,
-}: ChannelDetailsPanelProps) {
+export default function WorkingPanel({ index, refresh }: WorkingPanelProps) {
   const channel = useSelector(
     (state: RootState) => state.channels.channels[index],
   );
@@ -41,7 +38,9 @@ export default function WorkingDetailsPanel({
       state.channels.channelStates[index].workingInfoTimestamp,
   );
   const [duration, setDuration] = useState(
-    workingInfo.durationSeconds + Math.floor(new Date().getTime() / 1000) - workingInfoTimestamp
+    workingInfo.durationSeconds +
+      Math.floor(new Date().getTime() / 1000) -
+      workingInfoTimestamp,
   );
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const voltages = workingInfo.cellVoltages.filter((voltage) => voltage >= 100);
@@ -67,7 +66,9 @@ export default function WorkingDetailsPanel({
   const voltage = workingInfo.voltage;
   const batteryPercentage = BATTERY_TYPE_ATTR[
     basicInfo.batteryType
-  ].voltsToPersentage(voltage / voltages?.length / 1000.0);
+  ].voltsToPersentage(
+    voltage / (voltages?.length === 0 ? 1 : voltages?.length) / 1000.0,
+  );
   const batteryCell =
     batteryPercentage > 0 ? Math.floor(batteryPercentage / 20) : 0;
   const batteryColour =
@@ -90,7 +91,9 @@ export default function WorkingDetailsPanel({
     bluetoothHelper.addOnNotifyListener(notify);
     const interval = setInterval(() => {
       setDuration(
-        workingInfo.durationSeconds + Math.floor(new Date().getTime() / 1000) - workingInfoTimestamp
+        workingInfo.durationSeconds +
+          Math.floor(new Date().getTime() / 1000) -
+          workingInfoTimestamp,
       );
     }, 1000);
     return () => {

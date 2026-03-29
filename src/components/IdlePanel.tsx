@@ -1,40 +1,45 @@
 import { Box, Button, Grid, Typography } from "@mui/material";
 import * as d3 from "d3";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { StopChargeCommand } from "src/commands/StopChargeCommand";
 import { BATTERY_TYPE_ATTR } from "src/enums/BatteryTypes";
-import { CommandEnum } from "src/enums/Commands";
-import {
-  getOperationMode,
-  OPERATION_MODE_DISPLAY_NAMES
-} from "src/enums/OperationModes";
-import { store } from "src/redux/store";
-import { bluetoothHelper } from "src/utils/BluetoothHelper";
+import { RootState } from "src/redux/store";
 import BatteryAnimation from "./BatteryAnimation";
+import ChargingOptionsPanel from "./ChargingOptionsPanel";
+import { bluetoothHelper } from "src/utils/BluetoothHelper";
+import { useEffect, useState } from "react";
+import { CommandEnum } from "src/enums/Commands";
+import { StartChargeCommand } from "src/commands/StartChargeCommand";
+import { ChargeParameterEnum } from "src/enums/OperationModes";
+import { parseStartChargeResponse } from "src/responses/StartChargeResponse";
+import ChannelSettingDialog from "./ChannelSettingDialog";
 
-interface FinishedDetailsPanelProps {
+interface IdlePanelProps {
   index: number;
   refresh: () => void;
 }
 
-type RootState = ReturnType<typeof store.getState>;
-
-export default function FinishedDetailsPanel({
-  index,
-  refresh,
-}: FinishedDetailsPanelProps) {
-  const channel = useSelector(
-    (state: RootState) => state.channels.channels[index],
-  );
+export default function IdlePanel({ index, refresh }: IdlePanelProps) {
   const basicInfo = useSelector(
     (state: RootState) => state.channels.channelStates[index].basicInfo,
   );
   const workingInfo = useSelector(
     (state: RootState) => state.channels.channelStates[index].workingInfo,
   );
-  const [buttonDisabled, setButtonDisabled] = useState(false);
-  const voltages = workingInfo.cellVoltages.filter((voltage) => voltage >= 100);
+  const voltageInfo = useSelector(
+    (state: RootState) => state.channels.channelStates[index].voltageInfo,
+  );
+  const chargingOptions = useSelector(
+    (state: RootState) => state.channels.chargingOptions[index],
+  );
+  const deviceType = useSelector(
+    (state: RootState) => state.app.machineInfo?.deviceType,
+  );
+  const channel = useSelector(
+    (state: RootState) => state.channels.channels[index],
+  );
+  const [openSettingsDialog, setOpenSettingsDialog] = useState(false);
+  const voltages = voltageInfo?.voltages;
+  const resistances = voltageInfo?.resistances;
   const batteryPercentages =
     voltages?.map((voltage) =>
       BATTERY_TYPE_ATTR[basicInfo.batteryType].voltsToPersentage(
@@ -50,68 +55,67 @@ export default function FinishedDetailsPanel({
     const color = d3.interpolateRgb(fromColor, toColor)(percentage / 100);
     return color;
   });
-  const operationMode = getOperationMode(
-    BATTERY_TYPE_ATTR[basicInfo.batteryType].chemistry,
-    basicInfo.model,
-  );
-  const voltage = workingInfo.voltage;
+  const voltage = voltageInfo?.totalVoltage;
+  const resistance = voltageInfo?.totalResistance;
   const batteryPercentage = BATTERY_TYPE_ATTR[
     basicInfo.batteryType
   ].voltsToPersentage(voltage / voltages?.length / 1000.0);
   const batteryCell =
     batteryPercentage > 0 ? Math.floor(batteryPercentage / 20) : 0;
   const batteryColour = d3.interpolateRgb(
-          "rgb(255,0,0)",
-          "rgb(9,175,84)",
-        )(batteryPercentage / 100);
+    "rgb(255,0,0)",
+    "rgb(9,175,84)",
+  )(batteryPercentage / 100);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
+  const startCharge = () => {
+    setButtonDisabled(true);
+    const command = new StartChargeCommand(
+      channel,
+      deviceType,
+      chargingOptions?.batteryType,
+      chargingOptions?.cellCount,
+      chargingOptions?.operationMode,
+      chargingOptions?.parameters[ChargeParameterEnum.CHARGE_CURRENT]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.DISCHARGE_CURRENT]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.CHARGE_VOLTAGE]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.DISCHARGE_VOLTAGE]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.CYCLE_MODEL]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.CYCLE_NUMBER]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.REPEAK_NUMBER]?.value,
+      chargingOptions?.parameters[ChargeParameterEnum.TRACK_VOLTAGE]?.value,
+    );
+    bluetoothHelper.sendCommand(command);
+  };
+
   const notify = (command: CommandEnum, data: Uint8Array): void => {
     switch (command) {
-      case CommandEnum.STOP_CHARGE:
-        refresh();
+      case CommandEnum.START_CHARGE:
+        const response = parseStartChargeResponse(data);
+        if (response) {
+          if (response.success) {
+            refresh();
+          }
+        }
         break;
       default:
         break;
     }
   };
+
   useEffect(() => {
     bluetoothHelper.addOnNotifyListener(notify);
     return () => {
       bluetoothHelper.removeOnNotifyListener(notify);
     };
   }, []);
-  const stopCharge = () => {
-    setButtonDisabled(true);
-    const command = new StopChargeCommand(channel);
-    bluetoothHelper.sendCommand(command);
-  };
+
   return (
-    <Grid
-      container
-      direction="column"
-      spacing={2}
-      padding={2}
-      size={12}
-      alignItems={"center"}
-      justifyContent={"center"}
-    >
-      <Grid
-        container
-        direction={"row"}
-        spacing={2}
-        size={12}
-        alignItems={"center"}
-        justifyContent={"center"}
-      >
-        <Typography variant="h5">
-          Finished: {BATTERY_TYPE_ATTR[basicInfo.batteryType].displayName} /{" "}
-          {basicInfo.cellCount}S /{" "}
-          {OPERATION_MODE_DISPLAY_NAMES[operationMode]?.displayName}
-        </Typography>
-      </Grid>
-      <Grid container direction={"row"} spacing={2} size={12}>
+    <>
+      <Grid container direction="row" spacing={2}>
         <Grid container direction={"column"} size={6}>
-          {basicInfo && workingInfo && (
-            <Grid container direction={"column"} spacing={1}>
+          {basicInfo && workingInfo && voltageInfo && (
+            <Grid container direction={"row"} padding={2} spacing={1}>
               {voltage > 0 && (
                 <Grid container direction={"row"} spacing={2} size={12}>
                   <Grid
@@ -120,15 +124,13 @@ export default function FinishedDetailsPanel({
                     alignItems={"center"}
                     justifyContent={"center"}
                   >
-                      <BatteryAnimation
-                        height={40}
-                        width={76}
-                        charging={false}
-                        barAppearIntervalS={0.5}
-                        animateSingleBar={false}
-                        startFromBar={batteryCell}
-                        barColor={batteryColour}
-                      />
+                    <BatteryAnimation
+                      height={40}
+                      width={76}
+                      charging={false}
+                      startFromBar={batteryCell}
+                      barColor={batteryColour}
+                    />
                   </Grid>
                   <Grid
                     container
@@ -155,7 +157,9 @@ export default function FinishedDetailsPanel({
                     size={3}
                     alignItems={"center"}
                     justifyContent={"center"}
-                  ></Grid>
+                  >
+                    <Typography variant="h5">{resistance} mΩ</Typography>
+                  </Grid>
                 </Grid>
               )}
               {voltages &&
@@ -209,39 +213,49 @@ export default function FinishedDetailsPanel({
                       size={3}
                       alignItems={"center"}
                       justifyContent={"center"}
-                    ></Grid>
+                    >
+                      {resistances && resistances.length > index && (
+                        <Typography variant="h5">
+                          {resistances[index]} mΩ
+                        </Typography>
+                      )}
+                    </Grid>
                   </Grid>
                 ))}
             </Grid>
           )}
         </Grid>
         <Grid size={6}>
-          <Box
-            sx={{ width: "100%", height: "100%", border: "1px dashed grey" }}
-            padding={1}
-          >
-            <Typography variant="h5">
-              Capacity: {workingInfo.capacity} mAh
-            </Typography>
-            <Typography variant="h5">
-              Duration: {Math.floor(workingInfo.durationSeconds / 60)}:
-              {Math.floor(workingInfo.durationSeconds % 60)
-                .toString()
-                .padStart(2, "0")}
-            </Typography>
-          </Box>
+          <ChargingOptionsPanel index={index} />
         </Grid>
       </Grid>
-      <Button
-        disabled={buttonDisabled}
-        loading={buttonDisabled}
-        variant="contained"
-        color="success"
-        style={{ position: "absolute", bottom: 80, right: 20 }}
-        onClick={stopCharge}
-      >
-        Done
-      </Button>
-    </Grid>
+      <Box style={{ position: "absolute", bottom: 60, right: 20 }}>
+        <Grid container direction="row" spacing={2}>
+          <Button
+            disabled={buttonDisabled}
+            loading={buttonDisabled}
+            variant="contained"
+            color="primary"
+            onClick={startCharge}
+          >
+            Charge
+          </Button>
+          <Button
+            disabled={buttonDisabled}
+            loading={buttonDisabled}
+            variant="contained"
+            color="error"
+            onClick={() => setOpenSettingsDialog((prev) => !prev)}
+          >
+            Settings
+          </Button>
+        </Grid>
+      </Box>
+      <ChannelSettingDialog
+        channel={channel}
+        open={openSettingsDialog}
+        onClose={() => setOpenSettingsDialog(false)}
+      />
+    </>
   );
 }

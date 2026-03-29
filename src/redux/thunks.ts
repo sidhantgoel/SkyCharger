@@ -1,4 +1,4 @@
-import { ChannelBasicInfo } from "src/responses/ChannelBasicInfo";
+import { ChannelBasicInfo } from "src/responses/ChannelBasicInfoResponse";
 import {
   resetChannels,
   updateBasicInfo as updateBasicInfoAction,

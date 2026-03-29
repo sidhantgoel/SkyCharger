@@ -11,14 +11,18 @@ import {
 } from "src/redux/slices/channelsSlice";
 import { AppDispatch, RootState } from "src/redux/store";
 import { updateBasicInfo } from "src/redux/thunks";
-import { parseBasicInfo } from "src/responses/ChannelBasicInfo";
-import { parseChannelWorkingInfo } from "src/responses/ChannelWorkingInfo";
+import { parseBasicInfo } from "src/responses/ChannelBasicInfoResponse";
+import { parseChannelWorkingInfo } from "src/responses/ChannelWorkingInfoResponse";
 import { parseVoltageInfo } from "src/responses/QueryVoltageInfoResponse";
 import { bluetoothHelper } from "src/utils/BluetoothHelper";
-import ErrorDetailsPanel from "./ErrorDetailsPanel";
-import FinishedDetailsPanel from "./FinishedDetailsPanel";
-import IdleDetailsPanel from "./IdleDetailsPanel";
-import WorkingDetailsPanel from "./WorkingDetailsPanel";
+import ErrorPanel from "./ErrorPanel";
+import FinishedPanel from "./FinishedPanel";
+import IdlePanel from "./IdlePanel";
+import WorkingPanel from "./WorkingPanel";
+import {
+  openPasswordDialog,
+  setPasswordOk,
+} from "src/redux/slices/authenticationSlice";
 
 interface ChannelTabPanelProps {
   index: number;
@@ -36,6 +40,9 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
       state.channels.channelStates[index].workingInfo?.workingState,
   );
   const workingStateRef = useRef(workingState);
+  const passwordOk = useSelector(
+    (state: RootState) => state.authentication.passwordOk,
+  );
 
   useEffect(() => {
     workingStateRef.current = workingState;
@@ -55,12 +62,23 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (passwordOk) {
+      getChannelStatus();
+    }
+  }, [passwordOk]);
+
   const notify = (command: CommandEnum, data: Uint8Array): void => {
     switch (command) {
       case CommandEnum.QUERY_BASIC_INFO:
         const basicInfo = parseBasicInfo(data);
         if (basicInfo) {
           dispatch(updateBasicInfo(index, basicInfo));
+          if (!basicInfo.checkPassword) {
+            dispatch(openPasswordDialog(true));
+          } else {
+            dispatch(setPasswordOk(true));
+          }
           getChannelStatus();
         }
         break;
@@ -114,13 +132,13 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
   };
 
   if (workingState === ChannelWorkingState.IDLE) {
-    return <IdleDetailsPanel index={index} refresh={refresh} />;
+    return <IdlePanel index={index} refresh={refresh} />;
   } else if (workingState === ChannelWorkingState.WORKING) {
-    return <WorkingDetailsPanel index={index} refresh={refresh} />;
+    return <WorkingPanel index={index} refresh={refresh} />;
   } else if (workingState === ChannelWorkingState.DONE) {
-    return <FinishedDetailsPanel index={index} refresh={refresh} />;
+    return <FinishedPanel index={index} refresh={refresh} />;
   } else if (workingState === ChannelWorkingState.ERROR) {
-    return <ErrorDetailsPanel index={index} refresh={refresh} />;
+    return <ErrorPanel index={index} refresh={refresh} />;
   }
   return <></>;
 }

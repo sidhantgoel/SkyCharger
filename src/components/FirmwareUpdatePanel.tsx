@@ -79,12 +79,18 @@ async function fetchVersionInfo(sn: string): Promise<VersionInfo[]> {
       headers: headers,
     },
   );
-  const response = await fetch(request);
+  let response: Response;
+  try {
+    response = await fetch(request);
+  } catch (error) {
+    console.error("Failed to fetch version info:", error);
+    return [];
+  }
   const data = await response.json();
   return data;
 }
 
-export default function FirmwareUpdatePage() {
+export default function FirmwareUpdatePanel() {
   const firmwareUpdator = new FirmwareUpdator(bluetoothHelper);
   const [progress, setProgress] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
@@ -186,8 +192,7 @@ export default function FirmwareUpdatePage() {
           size={12}
           alignItems={"center"}
           justifyContent={"center"}
-        >
-        </Grid>
+        ></Grid>
       </Grid>
       <UpdateDialog
         open={dialogOpen}

@@ -8,15 +8,12 @@ import { ERROR_MESSAGES, ErrorCode } from "src/enums/ErrorCodes";
 import { RootState } from "src/redux/store";
 import { bluetoothHelper } from "src/utils/BluetoothHelper";
 
-interface ChannelDetailsPanelProps {
+interface ErrorPanelProps {
   index: number;
   refresh: () => void;
 }
 
-export default function ErrorDetailsPanel({
-  index,
-  refresh,
-}: ChannelDetailsPanelProps) {
+export default function ErrorPanel({ index, refresh }: ErrorPanelProps) {
   const channel = useSelector(
     (state: RootState) => state.channels.channels[index],
   );

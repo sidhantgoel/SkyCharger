@@ -1,18 +1,8 @@
 import Favorite from "@mui/icons-material/Favorite";
-import {
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select
-} from "@mui/material";
-import { useEffect, useState } from "react";
+import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { StartChargeCommand } from "src/commands/StartChargeCommand";
 import { BATTERY_TYPE_ATTR, BatteryType } from "src/enums/BatteryTypes";
 import { ChannelWorkingState } from "src/enums/ChannelWorkingStates";
-import { CommandEnum } from "src/enums/Commands";
 import {
   CHARGE_PARAMETER_ATTRS,
   ChargeParameterEnum,
@@ -26,18 +16,14 @@ import {
   updateOperationMode,
 } from "src/redux/slices/channelsSlice";
 import { RootState } from "src/redux/store";
-import { parseStartChargeResponse } from "src/responses/StartChargeResponse";
-import { bluetoothHelper } from "src/utils/BluetoothHelper";
 
-interface ChargingPanelProps {
+interface ChargingOptionsPanelProps {
   index: number;
-  refresh: () => void;
 }
 
-export default function ChargingPanel({ index, refresh }: ChargingPanelProps) {
-  const channel = useSelector(
-    (state: RootState) => state.channels.channels[index],
-  );
+export default function ChargingOptionsPanel({
+  index,
+}: ChargingOptionsPanelProps) {
   const chargingOptions = useSelector(
     (state: RootState) => state.channels.chargingOptions[index],
   );
@@ -48,44 +34,9 @@ export default function ChargingPanel({ index, refresh }: ChargingPanelProps) {
   const deviceType = useSelector(
     (state: RootState) => state.app.machineInfo?.deviceType,
   );
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   const dispatch = useDispatch();
 
-  const startCharge = () => {
-    setButtonDisabled(true);
-    const command = new StartChargeCommand(
-      channel,
-      deviceType,
-      chargingOptions?.batteryType,
-      chargingOptions?.cellCount,
-      chargingOptions?.operationMode,
-      chargingOptions?.parameters[ChargeParameterEnum.CHARGE_CURRENT]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.DISCHARGE_CURRENT]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.CHARGE_VOLTAGE]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.DISCHARGE_VOLTAGE]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.CYCLE_MODEL]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.CYCLE_NUMBER]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.REPEAK_NUMBER]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.TRACK_VOLTAGE]?.value,
-    );
-    bluetoothHelper.sendCommand(command);
-  };
-  const notify = (command: CommandEnum, data: Uint8Array): void => {
-    if (command === CommandEnum.START_CHARGE) {
-      const response = parseStartChargeResponse(data);
-      if (response) {
-        if (response.success) {
-          refresh();
-        }
-      }
-    }
-  };
-  useEffect(() => {
-    bluetoothHelper.addOnNotifyListener(notify);
-    return () => {
-      bluetoothHelper.removeOnNotifyListener(notify);
-    };
-  }, []);
   return (
     <>
       {chargingOptions && (
@@ -256,16 +207,6 @@ export default function ChargingPanel({ index, refresh }: ChargingPanelProps) {
           </Grid>
         </Grid>
       )}
-      <Button
-        disabled={buttonDisabled}
-        loading={buttonDisabled}
-        variant="contained"
-        color="primary"
-        style={{ position: "absolute", bottom: 80, right: 20 }}
-        onClick={startCharge}
-      >
-        Charge
-      </Button>
     </>
   );
 }

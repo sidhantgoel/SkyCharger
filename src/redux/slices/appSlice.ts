@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { MachineInfo } from "src/responses/MachineInfo";
+import { MachineInfo } from "src/responses/MachineInfoResponse";
 
 interface AppState {
   machineInfo: MachineInfo | null;

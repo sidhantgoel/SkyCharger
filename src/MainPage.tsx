@@ -11,36 +11,27 @@ import {
   Select,
   SelectChangeEvent,
   Tabs,
-  Typography
+  Typography,
 } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import { IpcRendererEvent } from "electron/renderer";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MachineInfoCommand } from "src/commands/MachineInfoCommand";
-import { QueryBasicInfoCommand } from "src/commands/QueryBasicInfoCommand";
 import ChannelTabPanel from "src/components/ChannelTabPanel";
-import FirmwareUpdatePage from "src/components/FirmwareUpdatePage";
+import FirmwareUpdatePanel from "src/components/FirmwareUpdatePanel";
 import PasswordDialog from "src/components/PasswordDialog";
-import { CHANNEL_LABELS, ChargingChannel } from "src/enums/ChargingChannels";
+import { CHANNEL_LABELS } from "src/enums/ChargingChannels";
 import { CommandEnum } from "src/enums/Commands";
-import { parseBasicInfo } from "src/responses/ChannelBasicInfo";
-import { parseMachineInfo } from "src/responses/MachineInfo";
+import { parseMachineInfo } from "src/responses/MachineInfoResponse";
 import { BluetoothHelper } from "src/utils/BluetoothHelper";
 import { DEVICE_ATTR } from "./enums/DeviceTypes";
-import {
-  updateMachineInfo,
-  updateSelectedTab
-} from "./redux/slices/appSlice";
+import { updateMachineInfo, updateSelectedTab } from "./redux/slices/appSlice";
 import {
   closePasswordDialog,
-  openPasswordDialog,
   setPassword,
-  setPasswordOk,
 } from "./redux/slices/authenticationSlice";
-import {
-  createChannels
-} from "./redux/slices/channelsSlice";
+import { createChannels } from "./redux/slices/channelsSlice";
 import {
   selectDevice,
   updateConnected,
@@ -50,7 +41,7 @@ import {
 import {
   stopScanning,
   updateDevices,
-  updateScanning
+  updateScanning,
 } from "./redux/slices/scanSlice";
 import { type AppDispatch, type RootState } from "./redux/store";
 import { disconnectDevice } from "./redux/thunks";
@@ -94,9 +85,6 @@ const MainPage = () => {
   const deviceType = useSelector(
     (state: RootState) => state.app.machineInfo?.deviceType,
   );
-  const passwordOk = useSelector(
-    (state: RootState) => state.authentication.passwordOk,
-  );
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -106,12 +94,6 @@ const MainPage = () => {
 
   const handleDeviceIdChange = (event: SelectChangeEvent) => {
     dispatch(selectDevice(event.target.value));
-  };
-
-  const getBasicInfo = async (channel: ChargingChannel) => {
-    await bluetoothHelper.sendCommand(
-      new QueryBasicInfoCommand(channel, password),
-    );
   };
 
   const notify = (command: CommandEnum, data: Uint8Array): void => {
@@ -124,16 +106,6 @@ const MainPage = () => {
         const machineInfo = parseMachineInfo(data);
         if (machineInfo) {
           dispatch(updateMachineInfo(machineInfo));
-        }
-        break;
-      case CommandEnum.QUERY_BASIC_INFO:
-        const basicInfo = parseBasicInfo(data);
-        if (basicInfo) {
-          if (!basicInfo.checkPassword) {
-            dispatch(openPasswordDialog(true));
-          } else {
-            dispatch(setPasswordOk(true));
-          }
         }
         break;
       default:
@@ -149,16 +121,10 @@ const MainPage = () => {
   }, []);
 
   useEffect(() => {
-    if (passwordOk) {
+    if (deviceType) {
       dispatch(createChannels(DEVICE_ATTR[deviceType].channels));
       dispatch(updateSelectedTab(0));
       dispatch(updateConnected());
-    }
-  }, [passwordOk]);
-
-  useEffect(() => {
-    if (deviceType) {
-      getBasicInfo(DEVICE_ATTR[deviceType].channels[0]);
     }
   }, [deviceType]);
 
@@ -204,7 +170,6 @@ const MainPage = () => {
 
   const passwordDialogHandleOkay = () => {
     dispatch(closePasswordDialog());
-    getBasicInfo(DEVICE_ATTR[deviceType].channels[0]);
   };
 
   interface TabPanelProps {
@@ -229,6 +194,23 @@ const MainPage = () => {
       </div>
     );
   }
+
+  const extraTabs = connected
+    ? [
+        { label: "Firmware Update", index: channels.length },
+      ]
+    : [];
+  const extraTabPanels = connected
+    ? [
+        <TabPanel
+          value={selectedTab}
+          index={channels.length}
+          key="firmware-update"
+        >
+          <FirmwareUpdatePanel />
+        </TabPanel>,
+      ]
+    : [];
 
   return (
     <>
@@ -274,7 +256,7 @@ const MainPage = () => {
             variant="contained"
             color="primary"
             onClick={connectDevice}
-            disabled={connected || connecting}
+            disabled={connected || connecting || !deviceId}
             loading={connecting}
             startIcon={<LoginIcon />}
           >
@@ -300,7 +282,9 @@ const MainPage = () => {
             {channels.map((channel) => (
               <Tab label={CHANNEL_LABELS[channel]} key={channel} />
             ))}
-            {connected && <Tab label="Firmware Update" key="firmware-update" />}
+            {extraTabs.map((tab) => (
+              <Tab label={tab.label} key={tab.index} />
+            ))}
           </Tabs>
         </Grid>
         <Grid container size="grow">
@@ -310,20 +294,12 @@ const MainPage = () => {
                 <ChannelTabPanel index={index} />
               </TabPanel>
             ))}
-            {connected && (
-              <TabPanel
-                value={selectedTab}
-                index={channels.length}
-                key="firmware-update"
-              >
-                <FirmwareUpdatePage />
-              </TabPanel>
-            )}
+            {extraTabPanels.map((panel) => panel)}
           </Paper>
         </Grid>
       </Grid>
       <Paper
-        sx={{ top: "auto", bottom: 0, padding: 2 }}
+        sx={{ top: "auto", bottom: 0, padding: 1 }}
         elevation={3}
         square={true}
       >

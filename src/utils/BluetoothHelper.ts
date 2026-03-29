@@ -2,7 +2,9 @@ import { Mutex } from "async-mutex";
 import { Command } from "src/commands/Command";
 import { CommandEnum } from "src/enums/Commands";
 import { ResponseParser } from "src/utils/ResponseParser";
+import { Buffer } from "buffer";
 const responseParser = new ResponseParser();
+const logEnabled = true;
 
 type OnNotifyListener = (command: CommandEnum, data: Uint8Array) => void;
 
@@ -25,6 +27,9 @@ export class BluetoothHelper {
       value.byteOffset,
       value.byteLength,
     );
+    if (logEnabled) {
+      console.log("received data", Buffer.from(data).toString("hex"));
+    }
     for (const byte of data) {
       let isValid = responseParser.consume(byte);
       if (isValid) {
@@ -97,6 +102,12 @@ export class BluetoothHelper {
     }
     try {
       const encodedCommand = command.encode();
+      if (logEnabled) {
+        console.log(
+          "sending command",
+          Buffer.from(encodedCommand).toString("hex"),
+        );
+      }
       await this.characteristic.writeValueWithResponse(
         encodedCommand as BufferSource,
       );

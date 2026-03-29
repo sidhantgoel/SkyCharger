@@ -16,8 +16,9 @@ import {
   getOperationModes,
   OperationMode,
 } from "src/enums/OperationModes";
-import { ChannelBasicInfo } from "src/responses/ChannelBasicInfo";
-import { ChannelWorkingInfo } from "src/responses/ChannelWorkingInfo";
+import { ChannelBasicInfo } from "src/responses/ChannelBasicInfoResponse";
+import { ChannelWorkingInfo } from "src/responses/ChannelWorkingInfoResponse";
+import { SystemInfo } from "src/responses/QuerySystemInfoResponse";
 import { VoltageInfo } from "src/responses/QueryVoltageInfoResponse";
 
 interface ChargeParameterOption {
@@ -50,12 +51,14 @@ interface ChannelsState {
   channels: ChargingChannel[];
   channelStates: ChannelState[];
   chargingOptions: ChargingOptionsState[];
+  systemInfos: (SystemInfo | null)[];
 }
 
 const initialState: ChannelsState = {
   channels: [],
   channelStates: [],
   chargingOptions: [],
+  systemInfos: [],
 };
 
 const getOptions = (attr: MinMaxStepDefaultAttr): ChargeParameter | null => {
@@ -98,6 +101,7 @@ const channelsSlice = createSlice({
           parameters: [],
         }),
       );
+      state.systemInfos = action.payload.map((channel): SystemInfo => null);
     },
     updateBasicInfo: (
       state,
@@ -171,7 +175,19 @@ const channelsSlice = createSlice({
       }
       const channelData = state.channelStates[index];
       channelData.workingInfo = workingInfo;
-      channelData.workingInfoTimestamp = Math.floor(new Date().getTime() / 1000);
+      channelData.workingInfoTimestamp = Math.floor(
+        new Date().getTime() / 1000,
+      );
+    },
+    updateSystemInfo: (
+      state,
+      action: PayloadAction<{
+        index: number;
+        systemInfo: SystemInfo;
+      }>,
+    ) => {
+      const { index, systemInfo } = action.payload;
+      state.systemInfos[index] = systemInfo;
     },
     updateVoltageInfo: (
       state,
@@ -326,5 +342,6 @@ export const {
   updateOperationMode,
   updateCellCount,
   updateChargeParameter,
+  updateSystemInfo,
 } = channelsSlice.actions;
 export default channelsSlice;
