@@ -1,7 +1,7 @@
 {
   "name": "SkyCharger",
   "productName": "SkyCharger",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "SkyCharger",
   "main": ".webpack/main",
   "private": true,
