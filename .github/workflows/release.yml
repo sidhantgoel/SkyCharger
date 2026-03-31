@@ -1,7 +1,9 @@
 # .github/workflows/release.yml
 name: Release app
-on: push
-if: startsWith(github.ref, 'refs/tags/')
+on:
+  push:
+    tags:
+      - '*'
 permissions:
   contents: write
 jobs:
