@@ -8,9 +8,7 @@ import { WebpackPlugin } from "@electron-forge/plugin-webpack";
 
 import { mainConfig } from "./webpack.main.config";
 import { rendererConfig } from "./webpack.renderer.config";
-import { MakerMSIX } from "@electron-forge/maker-msix";
 import { MakerWix } from "@electron-forge/maker-wix";
-import { MakerAppX } from "@electron-forge/maker-appx";
 import { MakerDMG } from "@electron-forge/maker-dmg";
 import { MakerPKG } from "@electron-forge/maker-pkg";
 import { PublisherGithub } from "@electron-forge/publisher-github";
@@ -32,14 +30,12 @@ const config: ForgeConfig = {
     new MakerZIP({}, ["darwin", "mas", "win32", "linux"]),
     new MakerRpm({}),
     new MakerDeb({ options: { icon: "./images/icon.png" } }),
-    new MakerMSIX({}),
     new MakerWix({
       icon: "./images/icon.ico",
       ui: {
         chooseDirectory: true,
       },
     }),
-    new MakerAppX({}),
     new MakerDMG({ icon: "./images/icon.icns" }),
     new MakerPKG({}),
   ],
