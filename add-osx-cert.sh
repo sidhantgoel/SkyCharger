@@ -17,8 +17,8 @@ security default-keychain -s $KEY_CHAIN
 # Unlock the keychain
 security unlock-keychain -p actions $KEY_CHAIN
 
-security import $APPLICATION_CERTIFICATE_P12 -k $KEY_CHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign;
-security import $INSTALLER_CERTIFICATE_P12 -k $KEY_CHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign;
+security import $APPLICATION_CERTIFICATE_P12 -k $KEY_CHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign -T /usr/bin/productbuild;
+security import $INSTALLER_CERTIFICATE_P12 -k $KEY_CHAIN -P $CERTIFICATE_PASSWORD -T /usr/bin/codesign -T /usr/bin/productbuild;
 
 security set-key-partition-list -S apple-tool:,apple: -s -k actions $KEY_CHAIN
 
