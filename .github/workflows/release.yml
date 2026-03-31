@@ -1,6 +1,7 @@
 # .github/workflows/release.yml
 name: Release app
 on: push
+if: startsWith(github.ref, 'refs/tags/')
 permissions:
   contents: write
 jobs:
@@ -10,10 +11,17 @@ jobs:
         os: [
             { name: "linux", image: "ubuntu-latest" },
             { name: "windows", image: "windows-latest" },
-            # { name: 'macos', image: 'macos-26' },
+            { name: 'macos', image: 'macos-26' },
           ]
     runs-on: ${{ matrix.os.image }}
     steps:
+      - name: Add OSX certificate
+        if: matrix.os.name == 'macos'
+        run: ./add-osx-cert.sh
+        env:
+          CERTIFICATE_OSX_APPLICATION: ${{ secrets.CERTIFICATE_OSX_APPLICATION }}
+          CERTIFICATE_OSX_INSTALLER: ${{ secrets.CERTIFICATE_OSX_INSTALLER }}
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
       - name: Github checkout
         uses: actions/checkout@v4
       - name: Use Node.js
@@ -24,4 +32,7 @@ jobs:
       - name: Publish app
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         run: npm run publish
