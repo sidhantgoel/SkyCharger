@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Add OSX certificate
         if: matrix.os.name == 'macos'
-        run: ./add-osx-cert.sh
+        run: chmod +x add-osx-cert.sh && ./add-osx-cert.sh
         env:
           CERTIFICATE_OSX_APPLICATION: ${{ secrets.CERTIFICATE_OSX_APPLICATION }}
           CERTIFICATE_OSX_INSTALLER: ${{ secrets.CERTIFICATE_OSX_INSTALLER }}
