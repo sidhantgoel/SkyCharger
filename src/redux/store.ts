@@ -4,13 +4,23 @@ import scanSlice from "./slices/scanSlice";
 import authenticationSlice from "./slices/authenticationSlice";
 import channelsSlice from "./slices/channelsSlice";
 import appSlice from "./slices/appSlice";
-import { persistStore, persistReducer } from "redux-persist";
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const persistConfig = {
   key: "authentication",
   storage,
-  blacklist: ["passwordOk"],
+  // Only the password itself should survive a restart.
+  blacklist: ["passwordOk", "passwordDialogOpen"],
 };
 
 const persistedReducer = persistReducer(
@@ -28,7 +38,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
 });

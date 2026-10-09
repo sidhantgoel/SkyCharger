@@ -54,12 +54,47 @@ declare const window: Window & {
         event: IpcRendererEvent,
         devices: Electron.BluetoothDevice[],
       ) => void,
-    ) => void;
+    ) => () => void;
     bluetoothCallback: (deviceId: string) => void;
   };
 };
 
-let timeout: NodeJS.Timeout | null = null;
+const INFO_RETRY_MS = 100;
+const MAX_INFO_ATTEMPTS = 50;
+
+// MachineInfo polling state, shared by the single MainPage instance.
+let infoTimeout: NodeJS.Timeout | null = null;
+let infoReceived = false;
+
+const stopInfoPolling = () => {
+  if (infoTimeout) clearTimeout(infoTimeout);
+  infoTimeout = null;
+};
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  dir?: string;
+  index: number;
+  value: number;
+}
+
+// Must live outside MainPage: a component declared inside another is a new
+// type on every render, which remounts the whole channel subtree.
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && <>{children}</>}
+    </div>
+  );
+}
 
 const MainPage = () => {
   const deviceId = useSelector((state: RootState) => state.connection.deviceId);
@@ -97,14 +132,12 @@ const MainPage = () => {
   };
 
   const notify = (command: CommandEnum, data: Uint8Array): void => {
-    if (timeout) {
-      clearTimeout(timeout);
-    }
-    timeout = null;
     switch (command) {
       case CommandEnum.INFO:
         const machineInfo = parseMachineInfo(data);
         if (machineInfo) {
+          infoReceived = true;
+          stopInfoPolling();
           dispatch(updateMachineInfo(machineInfo));
         }
         break;
@@ -116,35 +149,58 @@ const MainPage = () => {
   useEffect(() => {
     bluetoothHelper.addOnNotifyListener(notify);
     return () => {
+      stopInfoPolling();
       bluetoothHelper.removeOnNotifyListener(notify);
     };
   }, []);
 
   useEffect(() => {
-    if (deviceType) {
+    if (deviceType != null) {
       dispatch(createChannels(DEVICE_ATTR[deviceType].channels));
       dispatch(updateSelectedTab(0));
       dispatch(updateConnected());
     }
   }, [deviceType]);
 
-  const sendInfoCommand = async () => {
-    await bluetoothHelper.sendCommand(new MachineInfoCommand());
-    timeout = setTimeout(sendInfoCommand, 100);
+  // Poll MachineInfo until the charger answers. Stops on reply, on disconnect
+  // (sendCommand returns false) or after MAX_INFO_ATTEMPTS.
+  const sendInfoCommand = async (attempt = 0) => {
+    infoTimeout = null;
+    if (infoReceived) return;
+    if (attempt >= MAX_INFO_ATTEMPTS) {
+      console.error("Charger did not answer the machine info request");
+      dispatch(disconnectDevice());
+      return;
+    }
+    const sent = await bluetoothHelper.sendCommand(new MachineInfoCommand());
+    // The reply may arrive while the write is still in progress.
+    if (!sent || infoReceived) return;
+    infoTimeout = setTimeout(() => sendInfoCommand(attempt + 1), INFO_RETRY_MS);
   };
 
   const discoverDevice = async () => {
     dispatch(updateScanning());
-    const selectedDevice = await navigator.bluetooth.requestDevice({
-      acceptAllDevices: true,
-      optionalServices: [BluetoothHelper.SERVICE_UUID],
-    });
+    let selectedDevice: BluetoothDevice;
+    try {
+      selectedDevice = await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+        optionalServices: [BluetoothHelper.SERVICE_UUID],
+      });
+    } catch (error) {
+      // User cancelled the picker or no device was chosen.
+      console.error("Bluetooth device request failed:", error);
+      dispatch(stopScanning());
+      dispatch(updateDisconnected());
+      return;
+    }
     dispatch(stopScanning());
     const success = await bluetoothHelper.connect(selectedDevice);
     if (!success) {
       dispatch(updateDisconnected());
       return;
     }
+    stopInfoPolling();
+    infoReceived = false;
     await sendInfoCommand();
   };
 
@@ -154,7 +210,7 @@ const MainPage = () => {
   };
 
   useEffect(() => {
-    window.electronAPI.bluetoothSelectDevice((event, devices) => {
+    return window.electronAPI.bluetoothSelectDevice((event, devices) => {
       dispatch(updateDevices(devices));
     });
   }, []);
@@ -171,29 +227,6 @@ const MainPage = () => {
   const passwordDialogHandleOkay = () => {
     dispatch(closePasswordDialog());
   };
-
-  interface TabPanelProps {
-    children?: React.ReactNode;
-    dir?: string;
-    index: number;
-    value: number;
-  }
-
-  function TabPanel(props: TabPanelProps) {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`full-width-tabpanel-${index}`}
-        aria-labelledby={`full-width-tab-${index}`}
-        {...other}
-      >
-        {value === index && <>{children}</>}
-      </div>
-    );
-  }
 
   const extraTabs = connected
     ? [{ label: "Firmware Update", index: channels.length }]
@@ -246,7 +279,9 @@ const MainPage = () => {
               disabled={connected || connecting}
             >
               {devices.map((device) => (
-                <MenuItem value={device.deviceId}>{device.deviceName}</MenuItem>
+                <MenuItem key={device.deviceId} value={device.deviceId}>
+                  {device.deviceName}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>

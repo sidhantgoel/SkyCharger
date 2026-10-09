@@ -72,6 +72,25 @@ export const CHARGE_PARAMETER_ATTRS: Record<
   },
 };
 
+/**
+ * Display text for a charge parameter value. For nickel batteries the VOLTAGE
+ * parameter is the -ΔV peak-detection threshold, shown as "-Δ6 mV" rather than "6 mV".
+ */
+export function formatChargeParameterValue(
+  parameter: ChargeParameterEnum,
+  value: number,
+  chemistry: BatteryChemistry,
+): string {
+  if (
+    parameter === ChargeParameterEnum.VOLTAGE &&
+    chemistry === BatteryChemistry.NICKEL
+  ) {
+    return `-Δ${value} mV`;
+  }
+  const unit = CHARGE_PARAMETER_ATTRS[parameter].unit;
+  return unit ? `${value} ${unit}` : `${value}`;
+}
+
 interface OperationModeAttr {
   displayName: string;
 }
@@ -151,13 +170,13 @@ export function getOperationMode(
   const map = OperationModes[chemistry] ?? {};
   return Object.keys(map)
     .map((k) => Number(k) as OperationMode)
-    .find((mode) => mode === model);
+    .find((mode) => map[mode] === model);
 }
 
 export function getOperationModel(
   chemistry: BatteryChemistry,
   operationMode: OperationMode,
-): number {
+): number | null {
   const map = OperationModes[chemistry] ?? {};
-  return map[operationMode] ?? 0;
+  return map[operationMode] ?? null;
 }

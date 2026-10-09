@@ -30,10 +30,18 @@ export class ResponseParser {
         return false;
 
       case ParseState.WAITING_FOR_LENGTH:
+        // length counts payload + checksum, so 0 is invalid and 1 is an empty payload.
+        if (byte === 0) {
+          this.state = ParseState.WAITING_FOR_START;
+          return false;
+        }
         this.length = byte;
         this.buffer = new Uint8Array(this.length - 1);
         this.bufferIndex = 0;
-        this.state = ParseState.WAITING_FOR_DATA;
+        this.state =
+          this.buffer.length === 0
+            ? ParseState.WAITING_FOR_CHECKSUM
+            : ParseState.WAITING_FOR_DATA;
         return false;
 
       case ParseState.WAITING_FOR_DATA:
@@ -60,6 +68,14 @@ export class ResponseParser {
     }
 
     return false;
+  }
+
+  /** Discard any partial frame and queued responses. */
+  reset(): void {
+    this.responses = [];
+    this.buffer = new Uint8Array(0);
+    this.bufferIndex = 0;
+    this.state = ParseState.WAITING_FOR_START;
   }
 
   hasResponse(): boolean {

@@ -2,10 +2,15 @@ import BackpackIcon from "@mui/icons-material/Backpack";
 import BoltIcon from "@mui/icons-material/Bolt";
 import { Badge, Box, Button, Grid, Typography } from "@mui/material";
 import * as d3 from "d3";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { StopChargeCommand } from "src/commands/StopChargeCommand";
-import { BATTERY_TYPE_ATTR } from "src/enums/BatteryTypes";
+import {
+  BATTERY_TYPE_ATTR,
+  formatBatteryPercentage,
+  getBatteryPercentage,
+  getPackCellCount,
+} from "src/enums/BatteryTypes";
 import { CommandEnum } from "src/enums/Commands";
 import {
   getOperationMode,
@@ -14,6 +19,7 @@ import {
 } from "src/enums/OperationModes";
 import { store } from "src/redux/store";
 import { bluetoothHelper } from "src/utils/BluetoothHelper";
+import { usePendingCommand } from "src/utils/usePendingCommand";
 import BatteryAnimation from "./BatteryAnimation";
 
 interface WorkingPanelProps {
@@ -42,13 +48,11 @@ export default function WorkingPanel({ index, refresh }: WorkingPanelProps) {
       Math.floor(new Date().getTime() / 1000) -
       workingInfoTimestamp,
   );
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const { pending: buttonDisabled, send } = usePendingCommand();
   const voltages = workingInfo.cellVoltages.filter((voltage) => voltage >= 100);
   const batteryPercentages =
     voltages?.map((voltage) =>
-      BATTERY_TYPE_ATTR[basicInfo.batteryType].voltsToPersentage(
-        voltage / 1000.0,
-      ),
+      getBatteryPercentage(basicInfo.batteryType, voltage / 1000.0),
     ) ?? [];
   const batteryCells = batteryPercentages.map((percentage) =>
     percentage > 0 ? Math.floor(percentage / 20) : 0,
@@ -60,14 +64,15 @@ export default function WorkingPanel({ index, refresh }: WorkingPanelProps) {
     return color;
   });
   const operationMode = getOperationMode(
-    BATTERY_TYPE_ATTR[basicInfo.batteryType].chemistry,
+    BATTERY_TYPE_ATTR[basicInfo.batteryType]?.chemistry,
     basicInfo.model,
   );
   const voltage = workingInfo.voltage;
-  const batteryPercentage = BATTERY_TYPE_ATTR[
-    basicInfo.batteryType
-  ].voltsToPersentage(
-    voltage / (voltages?.length === 0 ? 1 : voltages?.length) / 1000.0,
+  const batteryPercentage = getBatteryPercentage(
+    basicInfo.batteryType,
+    voltage /
+      getPackCellCount(voltages?.length ?? 0, basicInfo.cellCount) /
+      1000.0,
   );
   const batteryCell =
     batteryPercentage > 0 ? Math.floor(batteryPercentage / 20) : 0;
@@ -87,9 +92,14 @@ export default function WorkingPanel({ index, refresh }: WorkingPanelProps) {
         break;
     }
   };
+  // The 1s ticker is created once; read the newest sample through a ref so the
+  // displayed duration re-syncs every time the charger reports a new one.
+  const latestSample = useRef({ workingInfo, workingInfoTimestamp });
+  latestSample.current = { workingInfo, workingInfoTimestamp };
   useEffect(() => {
     bluetoothHelper.addOnNotifyListener(notify);
     const interval = setInterval(() => {
+      const { workingInfo, workingInfoTimestamp } = latestSample.current;
       setDuration(
         workingInfo.durationSeconds +
           Math.floor(new Date().getTime() / 1000) -
@@ -102,9 +112,7 @@ export default function WorkingPanel({ index, refresh }: WorkingPanelProps) {
     };
   }, []);
   const stopCharge = () => {
-    setButtonDisabled(true);
-    const command = new StopChargeCommand(channel);
-    bluetoothHelper.sendCommand(command);
+    send(new StopChargeCommand(channel));
   };
   return (
     <Grid
@@ -176,7 +184,7 @@ export default function WorkingPanel({ index, refresh }: WorkingPanelProps) {
                     justifyContent={"center"}
                   >
                     <Typography variant="h5">
-                      {Number(batteryPercentage).toFixed(2)}%
+                      {formatBatteryPercentage(batteryPercentage)}
                     </Typography>
                   </Grid>
                   <Grid
@@ -230,7 +238,7 @@ export default function WorkingPanel({ index, refresh }: WorkingPanelProps) {
                       justifyContent={"center"}
                     >
                       <Typography variant="h5">
-                        {Number(batteryPercentages[index]).toFixed(2)}%
+                        {formatBatteryPercentage(batteryPercentages[index])}
                       </Typography>
                     </Grid>
                     <Grid

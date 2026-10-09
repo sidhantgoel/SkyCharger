@@ -76,12 +76,10 @@ export class SetVoltageLowCommand extends SetSystemInfoCommand {
   }
 }
 
-export class SetTemperatureCommand extends SetSystemInfoCommand {
-  public constructor(
-    channel: ChargingChannel,
-    unit: number,
-    temperature: number,
-  ) {
+// Distinct name from SetTemperatureCommand (src/commands/SetTemperatureCommand.ts),
+// which is a separate SET_TEMPERATURE command. This setting carries no unit byte.
+export class SetTemperatureSettingCommand extends SetSystemInfoCommand {
+  public constructor(channel: ChargingChannel, temperature: number) {
     super(channel, SettingType.TEMPERATURE, temperature, 0, 0);
   }
 }

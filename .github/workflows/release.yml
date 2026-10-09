@@ -3,17 +3,18 @@ name: Release app
 on:
   push:
     tags:
-      - '*'
+      - "*"
 permissions:
   contents: write
 jobs:
   build:
     strategy:
       matrix:
-        os: [
+        os:
+          [
             { name: "linux", image: "ubuntu-latest" },
             { name: "windows", image: "windows-latest" },
-            { name: 'macos', image: 'macos-26' },
+            { name: "macos", image: "macos-26" },
           ]
     runs-on: ${{ matrix.os.image }}
     steps:

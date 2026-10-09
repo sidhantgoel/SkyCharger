@@ -1,11 +1,16 @@
 import { Box, Button, Grid, Typography } from "@mui/material";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
-import { BATTERY_TYPE_ATTR } from "src/enums/BatteryTypes";
+import {
+  formatBatteryPercentage,
+  getBatteryPercentage,
+  getPackCellCount,
+} from "src/enums/BatteryTypes";
 import { RootState } from "src/redux/store";
 import BatteryAnimation from "./BatteryAnimation";
 import ChargingOptionsPanel from "./ChargingOptionsPanel";
 import { bluetoothHelper } from "src/utils/BluetoothHelper";
+import { usePendingCommand } from "src/utils/usePendingCommand";
 import { useEffect, useState } from "react";
 import { CommandEnum } from "src/enums/Commands";
 import { StartChargeCommand } from "src/commands/StartChargeCommand";
@@ -40,11 +45,23 @@ export default function IdlePanel({ index, refresh }: IdlePanelProps) {
   const [openSettingsDialog, setOpenSettingsDialog] = useState(false);
   const voltages = voltageInfo?.voltages;
   const resistances = voltageInfo?.resistances;
+  const voltage = voltageInfo?.totalVoltage;
+  const resistance = voltageInfo?.totalResistance;
+  const cellCount = getPackCellCount(
+    voltages?.length ?? 0,
+    basicInfo.cellCount,
+  );
+  const batteryPercentage = getBatteryPercentage(
+    basicInfo.batteryType,
+    voltage / cellCount / 1000.0,
+  );
+  // A single entry is the pack total, not a cell (e.g. nickel packs), so use
+  // the per-cell average for it instead of the raw pack voltage.
   const batteryPercentages =
-    voltages?.map((voltage) =>
-      BATTERY_TYPE_ATTR[basicInfo.batteryType].voltsToPersentage(
-        voltage / 1000.0,
-      ),
+    voltages?.map((cellVoltage) =>
+      voltages.length > 1
+        ? getBatteryPercentage(basicInfo.batteryType, cellVoltage / 1000.0)
+        : batteryPercentage,
     ) ?? [];
   const batteryCells = batteryPercentages.map((percentage) =>
     percentage > 0 ? Math.floor(percentage / 20) : 0,
@@ -55,37 +72,43 @@ export default function IdlePanel({ index, refresh }: IdlePanelProps) {
     const color = d3.interpolateRgb(fromColor, toColor)(percentage / 100);
     return color;
   });
-  const voltage = voltageInfo?.totalVoltage;
-  const resistance = voltageInfo?.totalResistance;
-  const batteryPercentage = BATTERY_TYPE_ATTR[
-    basicInfo.batteryType
-  ].voltsToPersentage(voltage / voltages?.length / 1000.0);
   const batteryCell =
     batteryPercentage > 0 ? Math.floor(batteryPercentage / 20) : 0;
   const batteryColour = d3.interpolateRgb(
     "rgb(255,0,0)",
     "rgb(9,175,84)",
   )(batteryPercentage / 100);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const {
+    pending: buttonDisabled,
+    send,
+    done: startChargeDone,
+  } = usePendingCommand();
 
   const startCharge = () => {
-    setButtonDisabled(true);
-    const command = new StartChargeCommand(
-      channel,
-      deviceType,
-      chargingOptions?.batteryType,
-      chargingOptions?.cellCount,
-      chargingOptions?.operationMode,
-      chargingOptions?.parameters[ChargeParameterEnum.CHARGE_CURRENT]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.DISCHARGE_CURRENT]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.CHARGE_VOLTAGE]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.DISCHARGE_VOLTAGE]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.CYCLE_MODEL]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.CYCLE_NUMBER]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.REPEAK_NUMBER]?.value,
-      chargingOptions?.parameters[ChargeParameterEnum.TRACK_VOLTAGE]?.value,
-    );
-    bluetoothHelper.sendCommand(command);
+    let command: StartChargeCommand;
+    try {
+      command = new StartChargeCommand(
+        channel,
+        deviceType,
+        chargingOptions?.batteryType,
+        chargingOptions?.cellCount,
+        chargingOptions?.operationMode,
+        chargingOptions?.parameters[ChargeParameterEnum.CHARGE_CURRENT]?.value,
+        chargingOptions?.parameters[ChargeParameterEnum.DISCHARGE_CURRENT]
+          ?.value,
+        chargingOptions?.parameters[ChargeParameterEnum.CHARGE_VOLTAGE]?.value,
+        chargingOptions?.parameters[ChargeParameterEnum.DISCHARGE_VOLTAGE]
+          ?.value,
+        chargingOptions?.parameters[ChargeParameterEnum.CYCLE_MODEL]?.value,
+        chargingOptions?.parameters[ChargeParameterEnum.CYCLE_NUMBER]?.value,
+        chargingOptions?.parameters[ChargeParameterEnum.REPEAK_NUMBER]?.value,
+        chargingOptions?.parameters[ChargeParameterEnum.TRACK_VOLTAGE]?.value,
+      );
+    } catch (error) {
+      console.error("Cannot start charge:", error);
+      return;
+    }
+    send(command);
   };
 
   const notify = (command: CommandEnum, data: Uint8Array): void => {
@@ -95,6 +118,8 @@ export default function IdlePanel({ index, refresh }: IdlePanelProps) {
         if (response) {
           if (response.success) {
             refresh();
+          } else {
+            startChargeDone();
           }
         }
         break;
@@ -139,7 +164,7 @@ export default function IdlePanel({ index, refresh }: IdlePanelProps) {
                     justifyContent={"center"}
                   >
                     <Typography variant="h5">
-                      {Number(batteryPercentage).toFixed(2)}%
+                      {formatBatteryPercentage(batteryPercentage)}
                     </Typography>
                   </Grid>
                   <Grid
@@ -195,7 +220,7 @@ export default function IdlePanel({ index, refresh }: IdlePanelProps) {
                       justifyContent={"center"}
                     >
                       <Typography variant="h5">
-                        {Number(batteryPercentages[index]).toFixed(2)}%
+                        {formatBatteryPercentage(batteryPercentages[index])}
                       </Typography>
                     </Grid>
                     <Grid
@@ -214,7 +239,7 @@ export default function IdlePanel({ index, refresh }: IdlePanelProps) {
                       alignItems={"center"}
                       justifyContent={"center"}
                     >
-                      {resistances && resistances.length > index && (
+                      {resistances?.[index] > 0 && (
                         <Typography variant="h5">
                           {resistances[index]} mΩ
                         </Typography>

@@ -78,7 +78,9 @@ const createSystemInfo = (
   };
 };
 
-export const parseSystemInfo = (data: Uint8Array): SystemInfo => {
+export const parseSystemInfo = (data: Uint8Array): SystemInfo | null => {
+  // Bytes 0–14 are always present; later fields depend on firmware.
+  if (data.length < 15) return null;
   const channel = data[0];
   const recycle = data[1];
   const timeEnable = data[2] === 1;
@@ -98,10 +100,11 @@ export const parseSystemInfo = (data: Uint8Array): SystemInfo => {
   const dcPower = newFirmware ? data[34] : null;
   const dcVoltage = newFirmware ? data[35] : null;
   const dcCurrent = newFirmware ? data[36] : null;
-  const endNotifyBeep = data.length >= 41 ? data[37] : null;
-  const lcd = data.length >= 0x27 ? data[38] : null;
-  const warning = data.length >= 0x27 ? data[39] : null;
-  const sleepTime = data.length >= 0x27 ? data[40] : null;
+  // Each optional field is present only if the frame reaches its byte.
+  const endNotifyBeep = data.length > 37 ? data[37] : null;
+  const lcd = data.length > 38 ? data[38] : null;
+  const warning = data.length > 39 ? data[39] : null;
+  const sleepTime = data.length > 40 ? data[40] : null;
   return createSystemInfo(
     channel,
     recycle,

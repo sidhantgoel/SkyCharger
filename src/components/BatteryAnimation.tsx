@@ -49,6 +49,11 @@ const BatteryAnimation = ({
   width,
   ...props
 }: BatteryAnimationProps) => {
+  // A negative index would make slice(0, -1) draw almost every bar as full.
+  startFromBar = Math.max(
+    0,
+    Math.min(CHARGE_BAR_PATHS.length, Math.floor(startFromBar)),
+  );
   const staticBars = CHARGE_BAR_PATHS.slice(0, startFromBar);
   const animatedBars = charging
     ? animateSingleBar

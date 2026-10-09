@@ -114,10 +114,11 @@ export function parseChannelWorkingInfo(
   ) {
     capacity = (d[2] << 8) + d[3];
     duration = (d[4] << 8) + d[5];
-    if (d[6] !== 0xff && d[7] !== 0xff) {
+    // 0xFFFF means "no reading"; any other value is valid.
+    if (!(d[6] === 0xff && d[7] === 0xff)) {
       voltage = (d[6] << 8) + d[7];
     }
-    if (d[8] !== 0xff && d[9] !== 0xff) {
+    if (!(d[8] === 0xff && d[9] === 0xff)) {
       electricity = (d[8] << 8) + d[9];
     }
     externalTemperature = d[10];
@@ -126,8 +127,10 @@ export function parseChannelWorkingInfo(
     // if(step != 16) {
     //   status = d[14];
     // }
-    inUsb = d[30] === 1;
-    status = d[31];
+    if (d.length >= 32) {
+      inUsb = d[30] === 1;
+      status = d[31];
+    }
   } else if (workingState === ChannelWorkingState.READY) {
     chargeErrorCode = d[3];
   } else if (workingState === ChannelWorkingState.STATE_7) {

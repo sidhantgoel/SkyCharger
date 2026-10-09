@@ -13,13 +13,13 @@ export enum ErrorCode {
   INPUT_FAIL = 0x0a,
   CONNECTION_BREAK = 0x0b,
   CELL_ERROR_VOLTAGE_INVALID = 0x0c,
-  BALANCE_CONNECTER_ERROR = 0x0d,
+  BALANCE_CONNECTOR_ERROR = 0x0d,
   NO_BATTERY = 0x0e,
   CELL_NUMBER_INCORRECT = 0x0f,
   CONNECTION_ERROR_CHECK_MAIN_PORT = 0x10,
   BATTERY_WAS_FULL = 0x11,
   NOT_NEED_CHARGE = 0x12,
-  CELL_ERROR_HIGHT_VOLTAGE = 0x13,
+  CELL_ERROR_HIGH_VOLTAGE = 0x13,
   CONNECTION_BREAK1 = 0x14,
   CONNECTION_BREAK2 = 0x15,
   CONNECTION_BREAK3 = 0x16,
@@ -48,14 +48,14 @@ export const ERROR_MESSAGES: Record<number, string> = {
   [ErrorCode.INPUT_FAIL]: "Input fail",
   [ErrorCode.CONNECTION_BREAK]: "Connection break",
   [ErrorCode.CELL_ERROR_VOLTAGE_INVALID]: "Cell error voltage invalid",
-  [ErrorCode.BALANCE_CONNECTER_ERROR]: "Balance connecter error",
+  [ErrorCode.BALANCE_CONNECTOR_ERROR]: "Balance connector error",
   [ErrorCode.NO_BATTERY]: "No battery",
   [ErrorCode.CELL_NUMBER_INCORRECT]: "Cell number incorrect",
   [ErrorCode.CONNECTION_ERROR_CHECK_MAIN_PORT]:
     "Connection error check main port",
   [ErrorCode.BATTERY_WAS_FULL]: "Battery was full",
   [ErrorCode.NOT_NEED_CHARGE]: "Not need charge",
-  [ErrorCode.CELL_ERROR_HIGHT_VOLTAGE]: "Cell error hight voltage",
+  [ErrorCode.CELL_ERROR_HIGH_VOLTAGE]: "Cell error high voltage",
   [ErrorCode.CONNECTION_BREAK1]: "Connection break",
   [ErrorCode.CONNECTION_BREAK2]: "Connection break",
   [ErrorCode.CONNECTION_BREAK3]: "Connection break",
@@ -71,9 +71,17 @@ export const ERROR_MESSAGES: Record<number, string> = {
 };
 
 /**
- * Map device byte to ErrorCode. Unknown values return ErrorCode.UNKNOWN.
+ * Map device byte to ErrorCode. Unknown values are kept as-is (not null) so
+ * the UI can still report the raw code; use getErrorMessage to display it.
  */
 export function getErrorCodeForValue(value: number): ErrorCode {
-  if (value in ERROR_MESSAGES) return value as ErrorCode;
-  return null;
+  return value as ErrorCode;
+}
+
+export function getErrorMessage(code: ErrorCode | null | undefined): string {
+  if (code == null) return "";
+  return (
+    ERROR_MESSAGES[code] ??
+    `Unknown error 0x${code.toString(16).padStart(2, "0")}`
+  );
 }

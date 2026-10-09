@@ -24,44 +24,28 @@ export function parseVoltageInfo(
   const d = data instanceof Uint8Array ? data : new Uint8Array(data);
   if (d.length < 2) return null;
   const channel = d[0];
-  let voltages: number[] = [];
-  let resistances: number[] = [];
-  let index = 1;
-  while (index < d.length) {
-    let voltage = (d[index] << 8) + d[index + 1];
-    if (voltage !== 0) {
-      voltages.push(voltage);
+  // Each 4-byte entry is [voltage hi, lo, resistance hi, lo]. Voltage and
+  // resistance are kept together so resistances[i] always matches voltages[i].
+  const entries: { voltage: number; resistance: number }[] = [];
+  for (let index = 1; index + 3 < d.length; index += 4) {
+    const voltage = (d[index] << 8) + d[index + 1];
+    if (voltage === 0) continue;
+    // Bit 7 of the high byte is a flag (value in 0.1 mΩ), not part of the value.
+    let resistance = ((d[index + 2] & 0x7f) << 8) + d[index + 3];
+    if (d[index + 2] & 0x80) {
+      resistance = resistance / 10.0;
     }
-    let resistance = ((d[index + 2] << 8) & 0x7f) + d[index + 3];
-    if (resistance !== 0) {
-      if (d[index + 2] & 0x80) {
-        resistance = resistance / 10.0;
-      }
-    }
-    if (resistance !== 0) {
-      resistances.push(resistance);
-    }
-    index += 4;
+    entries.push({ voltage, resistance });
   }
-  let totalVoltage = 0;
-  let totalResistance = 0;
-  if (voltages.length === 1) {
-    totalVoltage = voltages[0];
-  } else if (voltages.length > 1) {
-    totalVoltage = voltages[0];
-    voltages = voltages.slice(1);
-  }
-  if (resistances.length === 1) {
-    totalResistance = resistances[0];
-  } else if (resistances.length > 1) {
-    totalResistance = resistances[0];
-    resistances = resistances.slice(1);
-  }
+  // The first entry is the pack total; the rest are cells. A single entry is
+  // both the total and the only cell.
+  const total = entries[0];
+  const cells = entries.length > 1 ? entries.slice(1) : entries;
   return createVoltageInfo(
     channel,
-    totalVoltage,
-    totalResistance,
-    voltages,
-    resistances,
+    total?.voltage ?? 0,
+    total?.resistance ?? 0,
+    cells.map((cell) => cell.voltage),
+    cells.map((cell) => cell.resistance),
   );
 }

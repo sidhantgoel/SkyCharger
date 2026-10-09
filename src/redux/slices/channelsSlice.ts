@@ -4,10 +4,13 @@ import {
   BatteryChemistry,
   BatteryType,
 } from "src/enums/BatteryTypes";
-import { ChargingChannel } from "src/enums/ChargingChannels";
 import {
-  DEVICE_ATTR,
+  ChargingChannel,
+  findChannelForMask,
+} from "src/enums/ChargingChannels";
+import {
   DeviceType,
+  getSupportedBatteryTypes,
   MinMaxStepDefaultAttr,
 } from "src/enums/DeviceTypes";
 import {
@@ -83,14 +86,12 @@ const channelsSlice = createSlice({
   reducers: {
     createChannels: (state, action: PayloadAction<ChargingChannel[]>) => {
       state.channels = [...action.payload];
-      state.channelStates = action.payload.map(
-        (channel): ChannelState => ({
-          basicInfo: null,
-          workingInfo: null,
-          voltageInfo: null,
-          workingInfoTimestamp: null,
-        }),
-      );
+      state.channelStates = action.payload.map((channel): ChannelState => ({
+        basicInfo: null,
+        workingInfo: null,
+        voltageInfo: null,
+        workingInfoTimestamp: null,
+      }));
       state.chargingOptions = action.payload.map(
         (channel): ChargingOptionsState => ({
           batteryType: null,
@@ -109,9 +110,10 @@ const channelsSlice = createSlice({
         index: number;
         basicInfo: ChannelBasicInfo;
         deviceType: DeviceType;
+        version: number;
       }>,
     ) => {
-      const { index, basicInfo, deviceType } = action.payload;
+      const { index, basicInfo, deviceType, version } = action.payload;
       const channelData = state.channelStates[index];
       if (basicInfo.channel !== state.channels[index]) {
         return;
@@ -123,6 +125,7 @@ const channelsSlice = createSlice({
             index: index,
             batteryType: basicInfo.batteryType,
             deviceType: deviceType,
+            version: version,
           },
         });
         channelsSlice.caseReducers.updateOperationMode(state, {
@@ -134,6 +137,7 @@ const channelsSlice = createSlice({
               basicInfo.model,
             ),
             deviceType: deviceType,
+            version: version,
           },
         });
         channelsSlice.caseReducers.updateCellCount(state, {
@@ -179,14 +183,13 @@ const channelsSlice = createSlice({
         new Date().getTime() / 1000,
       );
     },
-    updateSystemInfo: (
-      state,
-      action: PayloadAction<{
-        index: number;
-        systemInfo: SystemInfo;
-      }>,
-    ) => {
-      const { index, systemInfo } = action.payload;
+    updateSystemInfo: (state, action: PayloadAction<SystemInfo>) => {
+      // Store by the channel the reply is for, not by whoever dispatched it.
+      const systemInfo = action.payload;
+      const index = state.channels.indexOf(
+        findChannelForMask(systemInfo.channel),
+      );
+      if (index === -1) return;
       state.systemInfos[index] = systemInfo;
     },
     updateVoltageInfo: (
@@ -207,6 +210,7 @@ const channelsSlice = createSlice({
       state.channels = [];
       state.channelStates = [];
       state.chargingOptions = [];
+      state.systemInfos = [];
     },
     updateBatteryType: (
       state,
@@ -214,12 +218,23 @@ const channelsSlice = createSlice({
         index: number;
         batteryType: BatteryType;
         deviceType: DeviceType;
+        version: number;
       }>,
     ) => {
-      const { index, batteryType, deviceType } = action.payload;
+      const { index, batteryType, deviceType, version } = action.payload;
       const newChemistry =
         BATTERY_TYPE_ATTR[batteryType]?.chemistry ?? BatteryChemistry.LITHIUM;
-      const newModes = getOperationModes(newChemistry);
+      // Only offer modes the device has settings for; if the device lists no
+      // settings for this battery type, fall back to every mode of the chemistry.
+      const supportedModes = getSupportedBatteryTypes(deviceType, version)?.[
+        batteryType
+      ];
+      const chemistryModes = getOperationModes(newChemistry);
+      const filteredModes = chemistryModes.filter(
+        (mode) => !supportedModes || supportedModes[mode],
+      );
+      const newModes =
+        filteredModes.length > 0 ? filteredModes : chemistryModes;
       const chargingOptions = state.chargingOptions[index];
       const newChargingOptions = {
         ...chargingOptions,
@@ -235,6 +250,7 @@ const channelsSlice = createSlice({
           index: index,
           operationMode: newModes[0],
           deviceType: deviceType,
+          version: version,
         },
       });
     },
@@ -244,56 +260,40 @@ const channelsSlice = createSlice({
         index: number;
         operationMode: OperationMode;
         deviceType: DeviceType;
+        version: number;
       }>,
     ) => {
-      const { index, operationMode, deviceType } = action.payload;
+      const { index, operationMode, deviceType, version } = action.payload;
       const chargingOptions = state.chargingOptions[index];
+      const attr = getSupportedBatteryTypes(deviceType, version)?.[
+        chargingOptions.batteryType
+      ]?.[operationMode];
       const parameters = [];
       parameters[ChargeParameterEnum.CHARGE_CURRENT] = getOptions(
-        DEVICE_ATTR[deviceType]?.supportedBatteryTypes[
-          chargingOptions.batteryType
-        ]?.[operationMode]?.chargeCurrent,
+        attr?.chargeCurrent,
       );
       parameters[ChargeParameterEnum.DISCHARGE_CURRENT] = getOptions(
-        DEVICE_ATTR[deviceType]?.supportedBatteryTypes[
-          chargingOptions.batteryType
-        ]?.[operationMode]?.dischargeCurrent,
+        attr?.dischargeCurrent,
       );
       parameters[ChargeParameterEnum.CHARGE_VOLTAGE] = getOptions(
-        DEVICE_ATTR[deviceType]?.supportedBatteryTypes[
-          chargingOptions.batteryType
-        ]?.[operationMode]?.chargeVoltage,
+        attr?.chargeVoltage,
       );
       parameters[ChargeParameterEnum.DISCHARGE_VOLTAGE] = getOptions(
-        DEVICE_ATTR[deviceType]?.supportedBatteryTypes[
-          chargingOptions.batteryType
-        ]?.[operationMode]?.dischargeVoltage,
+        attr?.dischargeVoltage,
       );
       parameters[ChargeParameterEnum.CYCLE_MODEL] = getOptions(
-        DEVICE_ATTR[deviceType]?.supportedBatteryTypes[
-          chargingOptions.batteryType
-        ]?.[operationMode]?.cycleModel,
+        attr?.cycleModel,
       );
       parameters[ChargeParameterEnum.CYCLE_NUMBER] = getOptions(
-        DEVICE_ATTR[deviceType]?.supportedBatteryTypes[
-          chargingOptions.batteryType
-        ]?.[operationMode]?.cycleNumber,
+        attr?.cycleNumber,
       );
       parameters[ChargeParameterEnum.REPEAK_NUMBER] = getOptions(
-        DEVICE_ATTR[deviceType]?.supportedBatteryTypes[
-          chargingOptions.batteryType
-        ]?.[operationMode]?.repeakNumber,
+        attr?.repeakNumber,
       );
       parameters[ChargeParameterEnum.TRACK_VOLTAGE] = getOptions(
-        DEVICE_ATTR[deviceType]?.supportedBatteryTypes[
-          chargingOptions.batteryType
-        ]?.[operationMode]?.trackVoltage,
+        attr?.trackVoltage,
       );
-      parameters[ChargeParameterEnum.VOLTAGE] = getOptions(
-        DEVICE_ATTR[deviceType]?.supportedBatteryTypes[
-          chargingOptions.batteryType
-        ]?.[operationMode]?.voltage,
-      );
+      parameters[ChargeParameterEnum.VOLTAGE] = getOptions(attr?.voltage);
       const newChargingOptions: ChargingOptionsState = {
         ...chargingOptions,
         operationMode: operationMode,

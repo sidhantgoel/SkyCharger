@@ -18,7 +18,7 @@ export class BluetoothHelper {
 
   private mutex = new Mutex();
 
-  private charecteristicCallback = (event: Event) => {
+  private characteristicCallback = (event: Event) => {
     const target = event.target as BluetoothRemoteGATTCharacteristic;
     const value = target?.value;
     if (!value) return;
@@ -44,9 +44,10 @@ export class BluetoothHelper {
   };
 
   public connect = async (device: BluetoothDevice): Promise<boolean> => {
-    if (!device.gatt) return;
+    if (!device.gatt) return false;
     const release = await this.mutex.acquire();
     try {
+      responseParser.reset();
       this.server = await device.gatt.connect();
       const service = await this.server.getPrimaryService(
         BluetoothHelper.SERVICE_UUID,
@@ -56,7 +57,7 @@ export class BluetoothHelper {
       );
       this.characteristic.addEventListener(
         "characteristicvaluechanged",
-        this.charecteristicCallback,
+        this.characteristicCallback,
       );
       await this.characteristic.startNotifications();
     } catch (error) {
@@ -70,13 +71,23 @@ export class BluetoothHelper {
 
   public disconnectDevice = async () => {
     const release = await this.mutex.acquire();
+    try {
+      await this.closeConnection();
+    } finally {
+      release();
+    }
+  };
+
+  private closeConnection = async () => {
     console.log("disconnecting from device");
+    // Drop any half-received frame so it can't corrupt the next session.
+    responseParser.reset();
     if (this.characteristic) {
       try {
         await this.characteristic.stopNotifications();
         this.characteristic.removeEventListener(
           "characteristicvaluechanged",
-          this.charecteristicCallback,
+          this.characteristicCallback,
         );
       } catch (error) {
         console.log("error stopping notifications");
@@ -91,14 +102,18 @@ export class BluetoothHelper {
       }
       this.server = null;
     }
-    release();
   };
 
-  public sendCommand = async (command: Command) => {
+  public get isConnected(): boolean {
+    return !!this.server?.connected && !!this.characteristic;
+  }
+
+  /** Returns false when not connected or the write failed. */
+  public sendCommand = async (command: Command): Promise<boolean> => {
     const release = await this.mutex.acquire();
-    if (!this.server?.connected || !this.characteristic) {
+    if (!this.isConnected) {
       release();
-      return;
+      return false;
     }
     try {
       const encodedCommand = command.encode();
@@ -111,8 +126,10 @@ export class BluetoothHelper {
       await this.characteristic.writeValueWithResponse(
         encodedCommand as BufferSource,
       );
+      return true;
     } catch (error) {
       console.log("error sending command");
+      return false;
     } finally {
       release();
     }

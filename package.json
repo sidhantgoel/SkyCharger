@@ -44,7 +44,7 @@
     "fork-ts-checker-webpack-plugin": "^7.3.0",
     "node-loader": "^2.1.0",
     "postcss-loader": "^8.2.1",
-    "prettier": "3.8.1",
+    "prettier": "3.9.9",
     "resolve-url-loader": "^5.0.0",
     "sass": "^1.98.0",
     "sass-loader": "^16.0.7",

@@ -31,11 +31,18 @@ export class StartChargeCommand extends Command {
       voltageCharge = voltageDischarge;
     }
 
-    let chemistry = BATTERY_TYPE_ATTR[batteryType].chemistry;
+    let chemistry = BATTERY_TYPE_ATTR[batteryType]?.chemistry;
+    const operationModel = getOperationModel(chemistry, operationMode);
+    if (operationModel === null) {
+      // Never fall back to another mode: the charger would run something else.
+      throw new Error(
+        `Operation mode ${operationMode} is not supported for battery type ${batteryType}`,
+      );
+    }
     commandBytes[0] = channel;
     commandBytes[1] = batteryType;
     commandBytes[2] = cellCount;
-    commandBytes[3] = getOperationModel(chemistry, operationMode);
+    commandBytes[3] = operationModel;
     commandBytes[4] = (chargeCurrent / 100) & 0xff;
     commandBytes[5] = (dischargeCurrent / 100) & 0xff;
     commandBytes[6] = (voltageDischarge / 0x100) & 0xff;

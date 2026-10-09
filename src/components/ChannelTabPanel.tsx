@@ -39,14 +39,17 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
     (state: RootState) =>
       state.channels.channelStates[index].workingInfo?.workingState,
   );
-  const workingStateRef = useRef(workingState);
   const passwordOk = useSelector(
     (state: RootState) => state.authentication.passwordOk,
   );
+  const passwordDialogOpen = useSelector(
+    (state: RootState) => state.authentication.passwordDialogOpen,
+  );
 
-  useEffect(() => {
-    workingStateRef.current = workingState;
-  }, [workingState]);
+  // notify and the polling interval are registered once on mount, so they read
+  // the current channel and password through this ref instead of a stale closure.
+  const latest = useRef({ channel, password });
+  latest.current = { channel, password };
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -67,6 +70,16 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
       getChannelStatus();
     }
   }, [passwordOk]);
+
+  // Re-check right after the password dialog closes rather than waiting for the
+  // next 5s poll. Skips mount, which already queries in the polling effect.
+  const wasPasswordDialogOpen = useRef(passwordDialogOpen);
+  useEffect(() => {
+    if (wasPasswordDialogOpen.current && !passwordDialogOpen) {
+      getBasicInfo();
+    }
+    wasPasswordDialogOpen.current = passwordDialogOpen;
+  }, [passwordDialogOpen]);
 
   const notify = (command: CommandEnum, data: Uint8Array): void => {
     switch (command) {
@@ -91,7 +104,8 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
               workingInfo: workingInfo,
             }),
           );
-          if (workingStateRef.current !== ChannelWorkingState.IDLE) {
+          // Use the state just received, not the previously rendered one.
+          if (workingInfo.workingState !== ChannelWorkingState.IDLE) {
             break;
           }
           getVoltageInfo();
@@ -118,17 +132,22 @@ export default function ChannelTabPanel({ index }: ChannelTabPanelProps) {
   };
 
   const getBasicInfo = async () => {
+    const { channel, password } = latest.current;
     await bluetoothHelper.sendCommand(
       new QueryBasicInfoCommand(channel, password),
     );
   };
 
   const getVoltageInfo = async () => {
-    await bluetoothHelper.sendCommand(new QueryVoltageInfoCommand(channel));
+    await bluetoothHelper.sendCommand(
+      new QueryVoltageInfoCommand(latest.current.channel),
+    );
   };
 
   const getChannelStatus = async () => {
-    await bluetoothHelper.sendCommand(new QueryChannelStatusCommand(channel));
+    await bluetoothHelper.sendCommand(
+      new QueryChannelStatusCommand(latest.current.channel),
+    );
   };
 
   if (workingState === ChannelWorkingState.IDLE) {

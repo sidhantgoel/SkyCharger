@@ -1,7 +1,8 @@
 import {
-  lifeVoltsToPersentage,
-  liioVoltsToPersentage,
-  lipoVoltsToPersentage,
+  lifeVoltsToPercentage,
+  liioVoltsToPercentage,
+  lipoVoltsToPercentage,
+  nickelVoltsToPercentage,
 } from "src/utils/BatteryUtils";
 
 export enum BatteryChemistry {
@@ -64,48 +65,80 @@ export const BATTERY_CHEMISTRY_ATTR: Record<
 interface BatteryTypeAttr {
   chemistry: BatteryChemistry;
   displayName: string;
-  voltsToPersentage: ((volts: number) => number) | null;
+  voltsToPercentage: ((volts: number) => number) | null;
 }
 
 export const BATTERY_TYPE_ATTR: Record<BatteryType, BatteryTypeAttr> = {
   [BatteryType.LI_PO]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium Polymer",
-    voltsToPersentage: lipoVoltsToPersentage,
+    voltsToPercentage: lipoVoltsToPercentage,
   },
   [BatteryType.LI_IO]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium Ion",
-    voltsToPersentage: liioVoltsToPersentage,
+    voltsToPercentage: liioVoltsToPercentage,
   },
   [BatteryType.LI_FE]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium Fe",
-    voltsToPersentage: lifeVoltsToPersentage,
+    voltsToPercentage: lifeVoltsToPercentage,
   },
   [BatteryType.LI_HV]: {
     chemistry: BatteryChemistry.LITHIUM,
     displayName: "Lithium HV",
-    voltsToPersentage: null,
+    voltsToPercentage: null,
   },
   [BatteryType.NI_MH]: {
     chemistry: BatteryChemistry.NICKEL,
     displayName: "Nickel MH",
-    voltsToPersentage: null,
+    voltsToPercentage: nickelVoltsToPercentage,
   },
   [BatteryType.NI_CD]: {
     chemistry: BatteryChemistry.NICKEL,
     displayName: "Nickel CD",
-    voltsToPersentage: null,
+    voltsToPercentage: nickelVoltsToPercentage,
   },
   [BatteryType.PB]: {
     chemistry: BatteryChemistry.LEAD_ACID,
     displayName: "Lead Acid",
-    voltsToPersentage: null,
+    voltsToPercentage: null,
   },
   [BatteryType.PB_AGM]: {
     chemistry: BatteryChemistry.LEAD_ACID,
     displayName: "Lead AGM",
-    voltsToPersentage: null,
+    voltsToPercentage: null,
   },
 };
+
+/**
+ * Number of cells to divide the pack voltage by. Uses the per-cell readings
+ * when there are several (balance lead connected); otherwise the configured
+ * cell count, since nickel packs and unbalanced lithium packs report only the
+ * pack total.
+ */
+export function getPackCellCount(
+  cellReadings: number,
+  cellCount: number,
+): number {
+  if (cellReadings > 1) return cellReadings;
+  return cellCount > 0 ? cellCount : 1;
+}
+
+/** Display text for a getBatteryPercentage result; "–" when unknown. */
+export function formatBatteryPercentage(percentage: number): string {
+  return percentage >= 0 ? `${percentage.toFixed(2)}%` : "–";
+}
+
+/**
+ * Approximate state of charge (0–100) for one cell, or -1 when the voltage is
+ * out of range or the battery type has no voltage curve.
+ */
+export function getBatteryPercentage(
+  batteryType: BatteryType,
+  volts: number,
+): number {
+  const voltsToPercentage = BATTERY_TYPE_ATTR[batteryType]?.voltsToPercentage;
+  if (!voltsToPercentage || !Number.isFinite(volts)) return -1;
+  return voltsToPercentage(volts);
+}

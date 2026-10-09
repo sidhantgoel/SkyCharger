@@ -56,7 +56,9 @@ export default function ChannelSettingDialog({
       case CommandEnum.QUERY_SYSTEM_INFO:
         const systemInfo = parseSystemInfo(data);
         console.log(systemInfo);
-        dispatch(updateSystemInfo({ index: channel, systemInfo: systemInfo }));
+        if (systemInfo) {
+          dispatch(updateSystemInfo(systemInfo));
+        }
         break;
       case CommandEnum.SET_SYSTEM_INFO:
         const setSystemInfoResponse = parseSetSystemInfoResponse(data);
@@ -75,7 +77,8 @@ export default function ChannelSettingDialog({
   }, []);
 
   const systemInfo = useSelector(
-    (state: RootState) => state.channels.systemInfos[channel],
+    (state: RootState) =>
+      state.channels.systemInfos[state.channels.channels.indexOf(channel)],
   );
 
   const [balanced, setBalanced] = useState(systemInfo?.balanced || false);

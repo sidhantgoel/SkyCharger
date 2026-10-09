@@ -1,12 +1,13 @@
 import { Alert, AlertTitle, Button, Grid } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { StopChargeCommand } from "src/commands/StopChargeCommand";
 import { ChannelWorkingState } from "src/enums/ChannelWorkingStates";
 import { CommandEnum } from "src/enums/Commands";
-import { ERROR_MESSAGES, ErrorCode } from "src/enums/ErrorCodes";
+import { ErrorCode, getErrorMessage } from "src/enums/ErrorCodes";
 import { RootState } from "src/redux/store";
 import { bluetoothHelper } from "src/utils/BluetoothHelper";
+import { usePendingCommand } from "src/utils/usePendingCommand";
 
 interface ErrorPanelProps {
   index: number;
@@ -26,7 +27,7 @@ export default function ErrorPanel({ index, refresh }: ErrorPanelProps) {
   const voltageInfo = useSelector(
     (state: RootState) => state.channels.channelStates[index].voltageInfo,
   );
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const { pending: buttonDisabled, send } = usePendingCommand();
 
   const notify = (command: CommandEnum, data: Uint8Array): void => {
     switch (command) {
@@ -46,9 +47,7 @@ export default function ErrorPanel({ index, refresh }: ErrorPanelProps) {
   }, []);
 
   const finishChannel = () => {
-    setButtonDisabled(true);
-    const command = new StopChargeCommand(channel);
-    bluetoothHelper.sendCommand(command);
+    send(new StopChargeCommand(channel));
   };
 
   return (
@@ -70,7 +69,7 @@ export default function ErrorPanel({ index, refresh }: ErrorPanelProps) {
                   >
                     <Alert variant="filled" severity="error">
                       <AlertTitle>System Error</AlertTitle>
-                      {ERROR_MESSAGES[workingInfo.systemErrorCode]}
+                      {getErrorMessage(workingInfo.systemErrorCode)}
                     </Alert>
                   </Grid>
                 )}
@@ -84,7 +83,7 @@ export default function ErrorPanel({ index, refresh }: ErrorPanelProps) {
                   >
                     <Alert variant="filled" severity="error">
                       <AlertTitle>Charge Error</AlertTitle>
-                      {ERROR_MESSAGES[workingInfo.chargeErrorCode]}
+                      {getErrorMessage(workingInfo.chargeErrorCode)}
                     </Alert>
                   </Grid>
                 )}
@@ -98,7 +97,7 @@ export default function ErrorPanel({ index, refresh }: ErrorPanelProps) {
                   >
                     <Alert variant="filled" severity="error">
                       <AlertTitle>DC Error</AlertTitle>
-                      {ERROR_MESSAGES[workingInfo.dcErrorCode]}
+                      {getErrorMessage(workingInfo.dcErrorCode)}
                     </Alert>
                   </Grid>
                 )}

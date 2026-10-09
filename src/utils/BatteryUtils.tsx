@@ -1,7 +1,7 @@
 /**
  * LiPo voltage to approximate percentage (0–100 or -1 for invalid).
  */
-export function lipoVoltsToPersentage(volts: number): number {
+export function lipoVoltsToPercentage(volts: number): number {
   if (volts >= 4.2) return 100.0;
   if (volts >= 4.15) return 95.0 + (5.0 * (volts - 4.15)) / (4.2 - 4.15);
   if (volts >= 4.11) return 90.0 + (5.0 * (volts - 4.11)) / (4.15 - 4.11);
@@ -26,11 +26,11 @@ export function lipoVoltsToPersentage(volts: number): number {
   return -1.0;
 }
 
-export function lifeVoltsToPersentage(volts: number): number {
+export function lifeVoltsToPercentage(volts: number): number {
   if (volts >= 3.65) return 100.0;
   if (volts >= 3.4) return 90.0 + (10.0 * (volts - 3.4)) / (3.65 - 3.4);
   if (volts >= 3.35) return 80.0 + (10.0 * (volts - 3.35)) / (3.4 - 3.35);
-  if (volts >= 3.32) return 70.0 + (10.0 * (volts - 3.35)) / (3.35 - 3.32);
+  if (volts >= 3.32) return 70.0 + (10.0 * (volts - 3.32)) / (3.35 - 3.32);
   if (volts >= 3.29) return 60.0 + (10.0 * (volts - 3.29)) / (3.32 - 3.29);
   if (volts >= 3.27) return 50.0 + (10.0 * (volts - 3.27)) / (3.29 - 3.27);
   if (volts >= 3.25) return 40.0 + (10.0 * (volts - 3.25)) / (3.27 - 3.25);
@@ -38,9 +38,30 @@ export function lifeVoltsToPersentage(volts: number): number {
   if (volts >= 3.2) return 20.0 + (10.0 * (volts - 3.2)) / (3.22 - 3.2);
   if (volts >= 3.0) return 10.0 + (10.0 * (volts - 3.0)) / (3.2 - 3.0);
   if (volts >= 2.5) return 0.0 + (10.0 * (volts - 2.5)) / (3.0 - 2.5);
+  return -1.0;
 }
 
-export function liioVoltsToPersentage(volts: number): number {
+/**
+ * NiMH / NiCd cell voltage to approximate percentage (0–100 or -1 for invalid).
+ * Nickel chemistry has a flat discharge curve, so this is a rough estimate from
+ * resting voltage; readings taken while charging will read high.
+ */
+export function nickelVoltsToPercentage(volts: number): number {
+  if (volts >= 1.42) return 100.0;
+  if (volts >= 1.38) return 90.0 + (10.0 * (volts - 1.38)) / (1.42 - 1.38);
+  if (volts >= 1.33) return 80.0 + (10.0 * (volts - 1.33)) / (1.38 - 1.33);
+  if (volts >= 1.29) return 70.0 + (10.0 * (volts - 1.29)) / (1.33 - 1.29);
+  if (volts >= 1.26) return 60.0 + (10.0 * (volts - 1.26)) / (1.29 - 1.26);
+  if (volts >= 1.24) return 50.0 + (10.0 * (volts - 1.24)) / (1.26 - 1.24);
+  if (volts >= 1.22) return 40.0 + (10.0 * (volts - 1.22)) / (1.24 - 1.22);
+  if (volts >= 1.2) return 30.0 + (10.0 * (volts - 1.2)) / (1.22 - 1.2);
+  if (volts >= 1.17) return 20.0 + (10.0 * (volts - 1.17)) / (1.2 - 1.17);
+  if (volts >= 1.12) return 10.0 + (10.0 * (volts - 1.12)) / (1.17 - 1.12);
+  if (volts >= 1.0) return 0.0 + (10.0 * (volts - 1.0)) / (1.12 - 1.0);
+  return -1.0;
+}
+
+export function liioVoltsToPercentage(volts: number): number {
   if (volts >= 4.2) return 100.0;
   if (volts >= 4.15) return 95.0 + (5.0 * (volts - 4.15)) / (4.2 - 4.15);
   if (volts >= 4.1) return 90.0 + (5.0 * (volts - 4.1)) / (4.15 - 4.1);
@@ -54,4 +75,5 @@ export function liioVoltsToPersentage(volts: number): number {
   if (volts >= 3.3) return 10.0 + (10.0 * (volts - 3.3)) / (3.4 - 3.3);
   if (volts >= 3.2) return 5.0 + (5.0 * (volts - 3.2)) / (3.3 - 3.2);
   if (volts >= 3.1) return 0.0 + (5.0 * (volts - 3.1)) / (3.2 - 3.1);
+  return -1.0;
 }

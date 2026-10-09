@@ -16,7 +16,7 @@ import { RootState } from "src/redux/store";
 import { parseBootVersion } from "src/responses/CheckBootVersionResponse";
 import { parseCheckNewVersion } from "src/responses/CheckNewVersionResponse";
 import { bluetoothHelper } from "src/utils/BluetoothHelper";
-import { FirmwareUpdator } from "src/utils/FirmwareUpdator";
+import { FirmwareUpdater } from "src/utils/FirmwareUpdater";
 
 function UpdateDialog({
   open,
@@ -79,19 +79,19 @@ async function fetchVersionInfo(sn: string): Promise<VersionInfo[]> {
       headers: headers,
     },
   );
-  let response: Response;
   try {
-    response = await fetch(request);
+    const response = await fetch(request);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Failed to fetch version info:", error);
     return [];
   }
-  const data = await response.json();
-  return data;
 }
 
 export default function FirmwareUpdatePanel() {
-  const firmwareUpdator = new FirmwareUpdator(bluetoothHelper);
+  const firmwareUpdater = new FirmwareUpdater(bluetoothHelper);
   const [progress, setProgress] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
   const [updating, setUpdating] = useState<boolean>(false);
@@ -119,9 +119,11 @@ export default function FirmwareUpdatePanel() {
   useEffect(() => {
     bluetoothHelper.addOnNotifyListener(notify);
     fetchVersionInfo(sn).then((versionInfo) => {
-      setNewVersion(versionInfo[0].version);
-      setDownloadUrl(versionInfo[0].download_url);
-      setChecksum(versionInfo[0].checksum);
+      const latest = versionInfo[0];
+      if (!latest) return;
+      setNewVersion(latest.version);
+      setDownloadUrl(latest.download_url);
+      setChecksum(latest.checksum);
     });
     return () => {
       bluetoothHelper.removeOnNotifyListener(notify);
@@ -136,21 +138,28 @@ export default function FirmwareUpdatePanel() {
     setUpdating((prev) => true);
     setDialogOpen((prev) => true);
     setMessage((prev) => "Downloading firmware file...");
-    const result = await fetch(downloadUrl);
-    const data = await result.arrayBuffer();
-    const firmwareUpdateData = new Uint8Array(data);
-    const updateResult = await firmwareUpdator.updateFirmware(
-      firmwareUpdateData,
-      checksum,
-      (message: string, progress: number) => {
-        setMessage((prev) => message);
-        setProgress((prev) => progress);
-      },
-    );
-    if (!updateResult) {
-      setMessage((prev) => "Firmware update failed.");
+    try {
+      const result = await fetch(downloadUrl);
+      if (!result.ok) throw new Error(`HTTP ${result.status}`);
+      const data = await result.arrayBuffer();
+      const firmwareUpdateData = new Uint8Array(data);
+      const updateResult = await firmwareUpdater.updateFirmware(
+        firmwareUpdateData,
+        checksum,
+        (message: string, progress: number) => {
+          setMessage((prev) => message);
+          setProgress((prev) => progress);
+        },
+      );
+      if (!updateResult) {
+        setMessage(() => "Firmware update failed.");
+      }
+    } catch (error) {
+      console.error("Firmware update failed:", error);
+      setMessage(() => "Firmware update failed.");
+    } finally {
+      setUpdating((prev) => false);
     }
-    setUpdating((prev) => false);
   };
   return (
     <React.Fragment>
@@ -202,7 +211,7 @@ export default function FirmwareUpdatePanel() {
         updating={updating}
       />
       <Button
-        disabled={updating}
+        disabled={updating || !downloadUrl}
         loading={updating}
         variant="contained"
         color="primary"

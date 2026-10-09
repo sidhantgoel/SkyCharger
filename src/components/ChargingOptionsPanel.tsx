@@ -1,11 +1,17 @@
 import Favorite from "@mui/icons-material/Favorite";
 import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { BATTERY_TYPE_ATTR, BatteryType } from "src/enums/BatteryTypes";
+import {
+  BATTERY_CHEMISTRY_ATTR,
+  BATTERY_TYPE_ATTR,
+  BatteryType,
+} from "src/enums/BatteryTypes";
+import { getSupportedBatteryTypes } from "src/enums/DeviceTypes";
 import { ChannelWorkingState } from "src/enums/ChannelWorkingStates";
 import {
   CHARGE_PARAMETER_ATTRS,
   ChargeParameterEnum,
+  formatChargeParameterValue,
   OPERATION_MODE_DISPLAY_NAMES,
   OperationMode,
 } from "src/enums/OperationModes";
@@ -34,6 +40,24 @@ export default function ChargingOptionsPanel({
   const deviceType = useSelector(
     (state: RootState) => state.app.machineInfo?.deviceType,
   );
+  const version = useSelector(
+    (state: RootState) => state.app.machineInfo?.version,
+  );
+
+  // Only offer battery types this device supports at its firmware version.
+  // Keep the current type listed so the Select never holds an unknown value.
+  const supportedTypes = getSupportedBatteryTypes(deviceType, version);
+  const allTypes = Object.keys(BATTERY_TYPE_ATTR).map(
+    (k) => Number(k) as BatteryType,
+  );
+  const batteryTypes = allTypes.filter(
+    (type) =>
+      !supportedTypes ||
+      supportedTypes[type] ||
+      type === chargingOptions?.batteryType,
+  );
+  const maxCells =
+    BATTERY_CHEMISTRY_ATTR[chargingOptions?.batteryChemistry]?.maxCells ?? 10;
 
   const dispatch = useDispatch();
 
@@ -66,12 +90,15 @@ export default function ChargingOptionsPanel({
                           index: index,
                           batteryType: e.target.value as BatteryType,
                           deviceType,
+                          version,
                         }),
                       )
                     }
                   >
-                    {Object.values(BATTERY_TYPE_ATTR).map((attr, index) => (
-                      <MenuItem value={index}>{attr.displayName}</MenuItem>
+                    {batteryTypes.map((batteryType) => (
+                      <MenuItem key={batteryType} value={batteryType}>
+                        {BATTERY_TYPE_ATTR[batteryType].displayName}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -93,12 +120,13 @@ export default function ChargingOptionsPanel({
                           index: index,
                           operationMode: e.target.value as OperationMode,
                           deviceType,
+                          version,
                         }),
                       )
                     }
                   >
                     {chargingOptions?.operationModes.map((mode) => (
-                      <MenuItem value={mode}>
+                      <MenuItem key={mode} value={mode}>
                         {OPERATION_MODE_DISPLAY_NAMES[mode]?.displayName}
                       </MenuItem>
                     ))}
@@ -129,8 +157,10 @@ export default function ChargingOptionsPanel({
                       )
                     }
                   >
-                    {Array.from({ length: 10 }, (_, index) => (
-                      <MenuItem value={index + 1}>{index + 1}</MenuItem>
+                    {Array.from({ length: maxCells }, (_, index) => (
+                      <MenuItem key={index + 1} value={index + 1}>
+                        {index + 1}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -161,11 +191,11 @@ export default function ChargingOptionsPanel({
                           }
                           value={parameter.value}
                           renderValue={(selected) =>
-                            selected +
-                            " " +
-                            CHARGE_PARAMETER_ATTRS[
-                              parameterIndex as ChargeParameterEnum
-                            ].unit
+                            formatChargeParameterValue(
+                              parameterIndex as ChargeParameterEnum,
+                              selected,
+                              chargingOptions.batteryChemistry,
+                            )
                           }
                           onChange={(e) =>
                             dispatch(
@@ -190,12 +220,11 @@ export default function ChargingOptionsPanel({
                                     : "hidden",
                                 }}
                               />
-                              {option.value}{" "}
-                              {
-                                CHARGE_PARAMETER_ATTRS[
-                                  parameterIndex as ChargeParameterEnum
-                                ].unit
-                              }
+                              {formatChargeParameterValue(
+                                parameterIndex as ChargeParameterEnum,
+                                option.value,
+                                chargingOptions.batteryChemistry,
+                              )}
                             </MenuItem>
                           ))}
                         </Select>
